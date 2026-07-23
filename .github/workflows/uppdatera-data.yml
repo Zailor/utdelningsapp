@@ -1,0 +1,48 @@
+name: Uppdatera kursdata
+
+on:
+  schedule:
+    - cron: "30 18 * * 1-5" # vardagar 18:30 UTC = 20:30 svensk sommartid, efter börsstängning
+  workflow_dispatch: # gör att körningen kan startas manuellt från Actions-fliken
+
+concurrency:
+  group: uppdatera-kursdata
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Inkrementell hämtning: cachen i analysis/data/history gör att bara
+      # svansen sedan förra körningen hämtas per aktie. --maxAge 6 gör en
+      # omkörning samma dag gratis om jobbet skulle avbrytas halvvägs.
+      # Vid 429 faller yahoo.js tillbaka på förinstallerad Chrome.
+      - name: Hämta ny kursdata (inkrementellt)
+        working-directory: analysis
+        run: node src/cli.js --json --delay 2000 --maxAge 6
+
+      - name: Exportera till appen
+        working-directory: analysis
+        run: node src/export.js --cachedOnly --maxAge 24 --delay 0
+
+      - name: Committa uppdaterad data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add analysis/data prototype/data
+          if git diff --cached --quiet; then
+            echo "Ingen ny data att committa."
+          else
+            git commit -m "Data: daglig uppdatering $(date -u +%F)"
+            git push
+          fi

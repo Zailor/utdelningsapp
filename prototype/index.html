@@ -120,6 +120,9 @@
   .detail-inner table { width: 100%; }
   .detail-inner th, .detail-inner td { padding: 6px 8px; font-size: .78rem; }
   .detail-inner tbody tr:last-child td { border-bottom: none; }
+  .cmp-detail-cols { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; }
+  .cmp-detail-cols > div { flex: 1 1 320px; min-width: 0; }
+  .cmp-detail-h { margin: 8px 0 2px; font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); font-weight: 700; }
   .legend { margin-top: 14px; font-size: .82rem; color: var(--ink-soft); }
   .legend summary { cursor: pointer; font-weight: 700; color: var(--ink); padding: 12px 16px; font-size: .85rem; }
   .legend dl { display: grid; grid-template-columns: auto 1fr; gap: 7px 14px; padding: 2px 16px 4px; margin: 0; }
@@ -130,7 +133,7 @@
      alla kolumner syns utan horisontell scroll (scrollen finns kvar som
      fallback på smala skärmar via .stat-table). */
   @media (min-width: 700px) {
-    #analysis .stat-table {
+    #analysis .stat-table, #cmpTable .stat-table {
       width: min(1180px, calc(100vw - 40px));
       position: relative;
       left: 50%;
@@ -337,8 +340,25 @@
 
   <!-- ============ COMPARE VIEW ============ -->
   <div class="view" id="compareView" hidden>
+    <div class="demo-banner" id="compareBanner" hidden><span></span></div>
     <p class="sub-note">Jämför aktiers totalavkastning i procent över en period – oberoende av hur mycket du köpt. Bra för att se vilken aktie som gått bäst inkl. utdelning.</p>
 
+    <div id="cmpReal" hidden>
+      <section class="card cfg-card">
+        <div class="cfg-item">
+          <span>Om du hade köpt&hellip;</span>
+          <div class="cfg-filters">
+            <label>För <input type="number" id="cmpAmount" min="100" step="1000" value="10000" style="width:110px"> kr</label>
+            <label>Den <input type="date" id="cmpDate"></label>
+          </div>
+        </div>
+      </section>
+      <div class="list-head"><h2>Alla aktier – vad hade du haft i dag?</h2></div>
+      <div id="cmpTable" class="stocks"></div>
+      <p class="legend-note" style="padding:10px 4px">Köp till stängningskurs första handelsdagen på eller efter valt datum. Utdelningar (x-dagar efter köpet) läggs som kontanter, ej återinvesterade. Exkl. courtage och skatt. OMX-raden är exkl. utdelningar. Klicka på kolumnrubriker för att sortera, och på en aktierad för årlig utveckling och alla utdelningar.</p>
+    </div>
+
+    <div id="cmpManual">
     <section class="card form" id="cForm">
       <h2>Aktie att jämföra</h2>
       <div class="grid">
@@ -380,6 +400,7 @@
       Total avkastning = (slutkurs − startkurs + utdelning) ÷ startkurs.<br>
       Exkl. utdelning = bara kursförändringen. Sorterat efter bäst total avkastning.
     </footer>
+    </div>
   </div>
 
   <!-- ============ ANALYSIS VIEW (dividend gap-fill) ============ -->
@@ -828,7 +849,200 @@
   var comparesEl = document.getElementById("compares");
   var cClear = document.getElementById("c_clear");
 
+  // ---------- Jämför med riktig data: "om du hade köpt X kr den D" ----------
+  var nf0 = new Intl.NumberFormat("sv-SE", { maximumFractionDigits: 0 });
+  var cmpCfg = { amount: 10000, date: null };
+  try {
+    var _cc = JSON.parse(localStorage.getItem("avkastning.compareCfg"));
+    if (_cc) { cmpCfg.amount = +_cc.amount > 0 ? +_cc.amount : 10000; cmpCfg.date = _cc.date || null; }
+  } catch (e) {}
+  function saveCmpCfg() { try { localStorage.setItem("avkastning.compareCfg", JSON.stringify(cmpCfg)); } catch (e) {} }
+  var cmpSort = { key: "totPct", dir: -1 };
+  var CMPCOLS = [
+    { key: "name", label: "Aktie", cls: "name" },
+    { key: "shares", label: "Antal", title: "Antal aktier för beloppet (delbara aktier för jämförbarhet)" },
+    { key: "p0", label: "Köpkurs", title: "Stängningskurs första handelsdagen på/efter valt datum" },
+    { key: "pN", label: "Kurs nu", title: "Senaste stängningskurs" },
+    { key: "pricePct", label: "Kurs ±%", title: "Kursutveckling exkl. utdelningar" },
+    { key: "divKr", label: "Utdelning kr", title: "Summa mottagna utdelningar (x-dagar efter köpet), som kontanter" },
+    { key: "divPct", label: "Utd %", title: "Mottagna utdelningar i procent av köpbeloppet" },
+    { key: "totKr", label: "Totalt ±kr", title: "Vinst/förlust i kronor inkl. utdelningar" },
+    { key: "totPct", label: "Totalt ±%", title: "Totalavkastning inkl. utdelningar" }
+  ];
+  function signed0(v, suffix) {
+    if (v == null) return "–";
+    return '<span class="' + (v >= 0 ? "up" : "down") + '">' + (v >= 0 ? "+" : "−") + nf0.format(Math.abs(v)) + suffix + '</span>';
+  }
+  function signedPct(v) {
+    if (v == null) return "–";
+    return '<span class="' + (v >= 0 ? "up" : "down") + '">' + (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + ' %</span>';
+  }
+  function cmpCompute() {
+    var d = REAL.series, dates = d.dates, last = dates.length - 1;
+    if (!cmpCfg.date || cmpCfg.date < dates[0]) cmpCfg.date = dates[0];
+    if (cmpCfg.date > dates[last]) cmpCfg.date = dates[last];
+    var buyIdx = 0;
+    while (buyIdx < last && dates[buyIdx] < cmpCfg.date) buyIdx++;
+    var amount = cmpCfg.amount;
+    var rows = d.stocks.map(function (s) {
+      var p0 = s.closes[buyIdx], pN = s.closes[last];
+      if (p0 == null || pN == null || !(p0 > 0)) return { name: s.name, unlisted: true };
+      var shares = amount / p0;
+      var divSum = 0;
+      s.dividends.forEach(function (dv) { if (dv.exDate > dates[buyIdx]) divSum += dv.amount; });
+      var divKr = shares * divSum;
+      var totKr = shares * pN + divKr - amount;
+      return {
+        name: s.name, sym: s.symbol, shares: shares, p0: p0, pN: pN,
+        pricePct: (pN / p0 - 1) * 100,
+        divKr: divKr, divPct: divKr / amount * 100,
+        totKr: totKr, totPct: totKr / amount * 100
+      };
+    });
+    var i0 = d.index.closes[buyIdx], iN = d.index.closes[last];
+    return { buyDate: dates[buyIdx], rows: rows, omxPct: i0 ? (iN / i0 - 1) * 100 : null };
+  }
+  // Detaljvy i Jämför: årlig kursutveckling + samtliga utdelningar för en aktie.
+  function cmpYearStats(s, dates) {
+    var first = 0;
+    while (first < dates.length && s.closes[first] == null) first++;
+    if (first >= dates.length) return [];
+    var years = {};
+    for (var i = first; i < dates.length; i++) {
+      var y = dates[i].slice(0, 4);
+      if (!years[y]) years[y] = { firstIdx: i, lastIdx: i };
+      years[y].lastIdx = i;
+    }
+    var ys = Object.keys(years).sort();
+    var lastYear = dates[dates.length - 1].slice(0, 4);
+    var rows = [], prevClose = null;
+    ys.forEach(function (y, k) {
+      var info = years[y];
+      var base = prevClose != null ? prevClose : s.closes[info.firstIdx];
+      var end = s.closes[info.lastIdx];
+      var div = 0;
+      s.dividends.forEach(function (dv) { if (dv.exDate.slice(0, 4) === y) div += dv.amount; });
+      var label = y;
+      if (k === 0 && dates[info.firstIdx].slice(5, 7) !== "01") label += " (från " + dates[info.firstIdx].slice(5, 10) + ")";
+      else if (y === lastYear) label += " (hittills)";
+      rows.push({ label: label, base: base, end: end, pct: (end / base - 1) * 100, div: div, totPct: (end - base + div) / base * 100 });
+      prevClose = end;
+    });
+    return rows;
+  }
+  function buildCmpDetailHtml(s, d) {
+    var yearRows = cmpYearStats(s, d.dates).reverse().map(function (r) { // nyast först, som utdelningslistan
+      return '<tr><td class="name">' + r.label + '</td>' +
+        '<td>' + nf2.format(r.base) + '</td><td>' + nf2.format(r.end) + '</td>' +
+        '<td>' + signedPct(r.pct) + '</td>' +
+        '<td>' + (r.div ? nf2.format(r.div) : "–") + '</td>' +
+        '<td>' + signedPct(r.totPct) + '</td></tr>';
+    }).join("");
+    var divsDesc = s.dividends.slice().sort(function (a, b) { return a.exDate < b.exDate ? 1 : -1; });
+    var divSum = s.dividends.reduce(function (a, dv) { return a + dv.amount; }, 0);
+    var divRows = divsDesc.map(function (dv) {
+      return '<tr><td class="name">' + dv.exDate + '</td><td>' + nf2.format(dv.amount) + '</td></tr>';
+    }).join("") || '<tr><td class="name" colspan="2">Inga utdelningar i perioden</td></tr>';
+    return '<div class="detail-inner"><div class="cmp-detail-cols">' +
+      '<div><p class="cmp-detail-h">Årlig utveckling</p>' +
+      '<table><thead><tr><th class="name">År</th><th title="Stängningskurs vid årets ingång (föregående års sista)">Start</th>' +
+      '<th title="Sista stängningskurs för året">Slut</th><th>Kurs ±%</th>' +
+      '<th title="Summa utdelningar per aktie under året (x-dagar)">Utd kr</th>' +
+      '<th title="(Slutkurs − startkurs + utdelningar) ÷ startkurs">Totalt ±%</th></tr></thead>' +
+      '<tbody>' + yearRows + '</tbody></table></div>' +
+      '<div><p class="cmp-detail-h">Alla utdelningar · ' + s.dividends.length + ' st · ' + nf2.format(divSum) + ' kr/aktie totalt</p>' +
+      '<table><thead><tr><th class="name">X-dag</th><th>Kr per aktie</th></tr></thead>' +
+      '<tbody>' + divRows + '</tbody></table></div>' +
+      '</div></div>';
+  }
+  function renderCompareReal() {
+    var res = cmpCompute();
+    var amtEl = document.getElementById("cmpAmount"), dateEl = document.getElementById("cmpDate");
+    var d = REAL.series;
+    dateEl.min = d.dates[0]; dateEl.max = d.dates[d.dates.length - 1];
+    if (document.activeElement !== amtEl) amtEl.value = cmpCfg.amount;
+    if (document.activeElement !== dateEl) dateEl.value = cmpCfg.date;
+    setRealBanner("compareBanner", res.rows.length + " aktier · köp " + res.buyDate +
+      " → " + d.dates[d.dates.length - 1] + " · uppdaterad " + (d.generated || "").slice(0, 10));
+    document.getElementById("compareBanner").hidden = false;
+    var rows = res.rows.slice();
+    rows.sort(function (a, b) {
+      if (a.unlisted && b.unlisted) return 0;
+      if (a.unlisted) return 1;
+      if (b.unlisted) return -1;
+      if (cmpSort.key === "name") return cmpSort.dir * String(a.name).localeCompare(String(b.name), "sv");
+      return cmpSort.dir * (a[cmpSort.key] - b[cmpSort.key]);
+    });
+    var html = '<table><thead><tr>' + CMPCOLS.map(function (c) {
+      var sorted = c.key === cmpSort.key;
+      return '<th class="' + (c.cls || "") + ' sortable' + (sorted ? " sorted" : "") + '" data-key="' + c.key + '"' +
+        (c.title ? ' title="' + c.title + '"' : "") + '>' + c.label + (sorted ? (cmpSort.dir < 0 ? " ▼" : " ▲") : "") + '</th>';
+    }).join("") + '</tr></thead><tbody>';
+    html += '<tr><td class="name">OMX (index, exkl. utd)</td><td>–</td><td>–</td><td>–</td><td>' + signedPct(res.omxPct) + '</td><td>–</td><td>–</td>' +
+      '<td>' + (res.omxPct == null ? "–" : signed0(cmpCfg.amount * res.omxPct / 100, " kr")) + '</td><td>' + signedPct(res.omxPct) + '</td></tr>';
+    rows.forEach(function (r) {
+      if (r.unlisted) {
+        html += '<tr><td class="name">' + esc(r.name) + '</td><td colspan="8" style="text-align:left;color:var(--ink-faint)">noterad efter köpdatumet</td></tr>';
+        return;
+      }
+      html += '<tr class="rowlink" data-sym="' + r.sym + '" title="Klicka för årlig utveckling och alla utdelningar">' +
+        '<td class="name">' + esc(r.name) + '</td>' +
+        '<td>' + nfSh.format(Math.round(r.shares * 10) / 10) + '</td>' +
+        '<td>' + nf2.format(r.p0) + '</td>' +
+        '<td>' + nf2.format(r.pN) + '</td>' +
+        '<td>' + signedPct(r.pricePct) + '</td>' +
+        '<td>' + nf0.format(r.divKr) + '</td>' +
+        '<td>' + (r.divPct == null ? "–" : nfSh.format(Math.round(r.divPct * 10) / 10) + " %") + '</td>' +
+        '<td>' + signed0(r.totKr, " kr") + '</td>' +
+        '<td>' + signedPct(r.totPct) + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    var wrap = document.createElement("div");
+    wrap.className = "card stat-table";
+    wrap.innerHTML = html;
+    wrap.querySelectorAll("th.sortable").forEach(function (th) {
+      th.addEventListener("click", function () {
+        var key = th.getAttribute("data-key");
+        if (cmpSort.key === key) cmpSort.dir = -cmpSort.dir;
+        else cmpSort = { key: key, dir: key === "name" ? 1 : -1 };
+        renderCompareReal();
+      });
+    });
+    wrap.querySelectorAll("tbody tr.rowlink").forEach(function (tr) {
+      tr.addEventListener("click", function () {
+        var next = tr.nextElementSibling;
+        if (next && next.classList.contains("detail-row")) { next.remove(); tr.classList.remove("open"); return; }
+        var stock = REAL.series.stocks.find(function (s) { return s.symbol === tr.getAttribute("data-sym"); });
+        if (!stock) return;
+        var dtr = document.createElement("tr");
+        dtr.className = "detail-row";
+        dtr.innerHTML = '<td colspan="' + CMPCOLS.length + '">' + buildCmpDetailHtml(stock, REAL.series) + '</td>';
+        tr.parentNode.insertBefore(dtr, tr.nextSibling);
+        tr.classList.add("open");
+      });
+    });
+    var host = document.getElementById("cmpTable");
+    host.innerHTML = "";
+    host.appendChild(wrap);
+  }
+  (function initCmpInputs() {
+    var amtEl = document.getElementById("cmpAmount"), dateEl = document.getElementById("cmpDate");
+    if (amtEl) amtEl.addEventListener("input", function () { cmpCfg.amount = Math.max(100, +amtEl.value || 10000); saveCmpCfg(); if (REAL.series) renderCompareReal(); });
+    if (dateEl) dateEl.addEventListener("change", function () { if (dateEl.value) { cmpCfg.date = dateEl.value; saveCmpCfg(); if (REAL.series) renderCompareReal(); } });
+  })();
   function renderCompare() {
+    if (REAL.series) {
+      document.getElementById("cmpReal").hidden = false;
+      document.getElementById("cmpManual").hidden = true;
+      if (!cmpCfg.date) {
+        var dts = REAL.series.dates;
+        var target = new Date(new Date(dts[dts.length - 1]).getTime() - 365 * 864e5).toISOString().slice(0, 10);
+        cmpCfg.date = target < dts[0] ? dts[0] : target;
+      }
+      renderCompareReal();
+      return;
+    }
     comparesEl.innerHTML = "";
     cClear.hidden = compares.length === 0;
     if (!compares.length) { comparesEl.appendChild(emptyEl("Inga aktier att jämföra än. Lägg till ovan.")); return; }
@@ -1489,7 +1703,7 @@
       chartEl.innerHTML = '<p class="sub-note">Ingen årsscreening ger någon korg – sänk Analys-filtren (särskilt minsta antal x-dagar, som är svårt att nå tidigt i historiken).</p>';
       document.getElementById("stLegend").innerHTML = "";
       document.getElementById("stStats").innerHTML = "";
-      setRealBanner("strategyBanner", "Riktig data (Yahoo) · out-of-sample: ingen korg klarar filtren");
+      setRealBanner("strategyBanner", "out-of-sample: ingen korg klarar filtren");
       return;
     }
     var dates = d.dates.slice(wf.startIdx);
@@ -1498,7 +1712,7 @@
       { label: "Omscreenad korg", color: "var(--accent)", res: { equity: wf.equity, trades: [] } },
       { label: "OMX (index)", color: "var(--ink-faint)", res: index }
     ];
-    setRealBanner("strategyBanner", "Riktig data (Yahoo) · out-of-sample: korgen väljs om 1:a handelsdagen varje år med Analys-filtren på enbart dåvarande historik · " +
+    setRealBanner("strategyBanner", "out-of-sample: korgen väljs om 1:a handelsdagen varje år med Analys-filtren på enbart dåvarande historik · " +
       dates[0].slice(0, 4) + "–" + dates[dates.length - 1].slice(0, 4) + " · uppdaterad " + (REAL.series.generated || "").slice(0, 10));
     chartEl.innerHTML = buildChart(series.map(function (s) { return { color: s.color, eq: s.res.equity }; }), dates);
     document.getElementById("stLegend").innerHTML = series.map(function (s) {
@@ -1532,12 +1746,12 @@
       document.getElementById("stChart").innerHTML = '<p class="sub-note">Inga aktier klarar Analys-filtren – korgen är tom. Sänk filtren under Analys.</p>';
       document.getElementById("stLegend").innerHTML = "";
       document.getElementById("stStats").innerHTML = "";
-      if (REAL.series) setRealBanner("strategyBanner", "Riktig data (Yahoo) · korg från Analys-filtren: 0 aktier");
+      if (REAL.series) setRealBanner("strategyBanner", "korg från Analys-filtren: 0 aktier");
       return;
     }
     if (REAL.series) {
       var names = d.stocks.map(function (s) { return s.name; });
-      setRealBanner("strategyBanner", "Riktig data (Yahoo) · korg från Analys-filtren: " +
+      setRealBanner("strategyBanner", "korg från Analys-filtren: " +
         (names.length <= 6 ? names.join(", ") : names.length + " aktier") +
         " · " + d.dates[0].slice(0, 4) + "–" + d.dates[d.dates.length - 1].slice(0, 4) +
         " · uppdaterad " + (REAL.series.generated || "").slice(0, 10));
@@ -1657,7 +1871,7 @@
     Promise.all([get("data/analysis.json"), get("data/series.json")]).then(function (res) {
       REAL.analysis = res[0]; REAL.series = res[1];
       if (REAL.analysis && REAL.analysis.rows && REAL.analysis.rows.length) {
-        setRealBanner("analysisBanner", "Riktig data (Yahoo) · " + REAL.analysis.rows.length +
+        setRealBanner("analysisBanner", "" + REAL.analysis.rows.length +
           " utdelare av " + REAL.analysis.universeSize + " i universum · " +
           REAL.analysis.years + " år · uppdaterad " + (REAL.analysis.generated || "").slice(0, 10));
         renderAnalysis();
@@ -1667,6 +1881,7 @@
       if (REAL.series && REAL.series.stocks && REAL.series.stocks.length) {
         _stratData = null;
         renderStrategy(); // sätter bannern utifrån aktuell korg (Analys-filtren)
+        renderCompare();  // växlar Jämför-fliken till riktig data
       } else {
         REAL.series = null;
       }
