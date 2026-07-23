@@ -1,4 +1,5 @@
 name: Uppdatera kursdata
+# Hämtar inkrementell kursdata och committar resultatet.
 
 on:
   schedule:
