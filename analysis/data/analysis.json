@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-23T15:14:41.260Z",
+  "generated": "2026-07-23T19:54:52.896Z",
   "config": {
     "window": 40,
     "dropAt": "open",
@@ -9,7 +9,7 @@
     "minYield": 0,
     "minEvents": 1
   },
-  "universeSize": 102,
+  "universeSize": 101,
   "skipped": {
     "noDividend": 8,
     "belowMinYield": 0,
@@ -18,7 +18,7 @@
   "rows": [
     {
       "name": "AddLife B",
-      "yield": 0.9584664536741214,
+      "yield": 0.9633911556842419,
       "window": 40,
       "n": 7,
       "fillRate": 100,
@@ -35,7 +35,7 @@
     },
     {
       "name": "BioArctic B",
-      "yield": 0.6591957944080812,
+      "yield": 0.6518905083365313,
       "window": 40,
       "n": 2,
       "fillRate": 100,
@@ -119,6 +119,23 @@
       "avgGainPct": 0.02313064841791856
     },
     {
+      "name": "Munters",
+      "yield": 0.8874098574145315,
+      "window": 40,
+      "n": 8,
+      "fillRate": 100,
+      "medianRec": 0.5,
+      "fellRate": 37.5,
+      "avgRatio": 0.8409627199609601,
+      "maxRec": 28,
+      "recentFill": 100,
+      "years": [
+        2021,
+        2026
+      ],
+      "avgGainPct": 0.021698983762611222
+    },
+    {
       "name": "Electrolux Professional B",
       "yield": 2.085620232518155,
       "window": 40,
@@ -154,20 +171,20 @@
     },
     {
       "name": "AstraZeneca",
-      "yield": 1.8929491222667076,
+      "yield": 1.8616859569305428,
       "window": 40,
       "n": 16,
       "fillRate": 100,
       "medianRec": 2,
       "fellRate": 31.25,
-      "avgRatio": 0.8226702382324579,
+      "avgRatio": 0.8237997414718726,
       "maxRec": 32,
       "recentFill": 100,
       "years": [
         2018,
         2026
       ],
-      "avgGainPct": 0.022058523930183378
+      "avgGainPct": 0.02204090990611339
     },
     {
       "name": "Lundin Gold",
@@ -409,7 +426,7 @@
     },
     {
       "name": "Atlas Copco A",
-      "yield": 2.0135918061413998,
+      "yield": 1.9970044628338794,
       "window": 40,
       "n": 15,
       "fillRate": 93.33333333333333,
@@ -460,7 +477,7 @@
     },
     {
       "name": "Assa Abloy B",
-      "yield": 1.8082916464659327,
+      "yield": 1.789871912326801,
       "window": 40,
       "n": 14,
       "fillRate": 92.85714285714286,
@@ -494,20 +511,20 @@
     },
     {
       "name": "Autoliv SDB",
-      "yield": 2.952406299212598,
+      "yield": 3.011839072256913,
       "window": 40,
       "n": 28,
       "fillRate": 89.28571428571429,
       "medianRec": 2,
       "fellRate": 39.285714285714285,
-      "avgRatio": 1.0262287791254996,
+      "avgRatio": 1.0257207993794315,
       "maxRec": 31,
       "recentFill": 90,
       "years": [
         2018,
         2026
       ],
-      "avgGainPct": 0.00822611924596724
+      "avgGainPct": 0.008229718703082376
     },
     {
       "name": "Sagax B",
@@ -545,7 +562,7 @@
     },
     {
       "name": "Avanza Bank",
-      "yield": 3.342947090728185,
+      "yield": 3.3185839653564337,
       "window": 40,
       "n": 9,
       "fillRate": 88.88888888888889,
@@ -613,7 +630,7 @@
     },
     {
       "name": "AAK",
-      "yield": 4.675,
+      "yield": 4.722222222222222,
       "window": 40,
       "n": 8,
       "fillRate": 87.5,
@@ -630,7 +647,7 @@
     },
     {
       "name": "Bure Equity",
-      "yield": 1.029191569747853,
+      "yield": 1.0361718399558817,
       "window": 40,
       "n": 8,
       "fillRate": 87.5,
@@ -732,7 +749,7 @@
     },
     {
       "name": "Arjo B",
-      "yield": 3.6314984921300724,
+      "yield": 3.639846690096118,
       "window": 40,
       "n": 8,
       "fillRate": 87.5,
@@ -800,7 +817,7 @@
     },
     {
       "name": "Beijer Ref B",
-      "yield": 1.0812825756925795,
+      "yield": 1.074074074074074,
       "window": 40,
       "n": 14,
       "fillRate": 85.71428571428571,
@@ -885,7 +902,7 @@
     },
     {
       "name": "Alfa Laval",
-      "yield": 1.5734265734265735,
+      "yield": 1.5603329040343836,
       "window": 40,
       "n": 7,
       "fillRate": 85.71428571428571,
@@ -902,7 +919,7 @@
     },
     {
       "name": "AFRY",
-      "yield": 5.970149253731343,
+      "yield": 5.988024134471052,
       "window": 40,
       "n": 7,
       "fillRate": 85.71428571428571,
@@ -933,6 +950,23 @@
         2026
       ],
       "avgGainPct": 0.034953894261328604
+    },
+    {
+      "name": "HMS Networks",
+      "yield": 1.0577347133358324,
+      "window": 40,
+      "n": 6,
+      "fillRate": 83.33333333333334,
+      "medianRec": 0,
+      "fellRate": 33.33333333333333,
+      "avgRatio": 0.8709158367003367,
+      "maxRec": 24,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.006793301068065415
     },
     {
       "name": "Systemair",
@@ -987,20 +1021,20 @@
     },
     {
       "name": "Betsson B",
-      "yield": 8.040821869037545,
+      "yield": 8.14014688888889,
       "window": 40,
       "n": 11,
       "fillRate": 81.81818181818183,
       "medianRec": 3,
       "fellRate": 9.090909090909092,
-      "avgRatio": 0.5128385377743317,
+      "avgRatio": 0.5128000465048849,
       "maxRec": 32,
       "recentFill": 100,
       "years": [
         2019,
         2026
       ],
-      "avgGainPct": 0.028080318517386616
+      "avgGainPct": 0.028081728889522515
     },
     {
       "name": "Securitas B",
@@ -1021,7 +1055,7 @@
     },
     {
       "name": "Boliden",
-      "yield": 2.257336399662171,
+      "yield": 2.3138410057268928,
       "window": 40,
       "n": 11,
       "fillRate": 81.81818181818183,
@@ -1106,7 +1140,7 @@
     },
     {
       "name": "Axfood",
-      "yield": 3.7829657953104388,
+      "yield": 3.752144131434971,
       "window": 40,
       "n": 14,
       "fillRate": 78.57142857142857,
@@ -1208,7 +1242,7 @@
     },
     {
       "name": "Addtech B",
-      "yield": 0.9411764705882354,
+      "yield": 0.9428403233784345,
       "window": 40,
       "n": 8,
       "fillRate": 75,
@@ -1259,7 +1293,7 @@
     },
     {
       "name": "ABB",
-      "yield": 1.1775289188711302,
+      "yield": 1.1758023820203776,
       "window": 40,
       "n": 8,
       "fillRate": 75,
@@ -1276,7 +1310,7 @@
     },
     {
       "name": "Alleima",
-      "yield": 2.314814814814815,
+      "yield": 2.2977940531956715,
       "window": 40,
       "n": 4,
       "fillRate": 75,
@@ -1293,7 +1327,7 @@
     },
     {
       "name": "Bravida",
-      "yield": 2.7397260876783016,
+      "yield": 2.749638266217294,
       "window": 40,
       "n": 8,
       "fillRate": 75,
@@ -1463,7 +1497,7 @@
     },
     {
       "name": "Billerud",
-      "yield": 2.8490029728556565,
+      "yield": 2.8388929547709543,
       "window": 40,
       "n": 9,
       "fillRate": 55.55555555555556,
