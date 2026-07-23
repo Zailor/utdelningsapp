@@ -2,69 +2,80 @@
 
 Verktyg för svenska aktier med fokus på utdelning: följ din portfölj, jämför
 totalavkastning, analysera utdelnings­gapet på x-dagen, och backtesta strategier.
+Körs på **riktig data för hela Nasdaq Stockholm Large Cap** (~100 bolag, 8 års
+historik) som uppdateras varje vardagkväll via GitHub Actions.
 
 Projektet har två delar:
 
 ```
-prototype/   Fristående webbapp (HTML/JS, ingen build) – UI:t med exempeldata
-analysis/    Node-motor som kör analysen mot riktig svensk data (Yahoo)
+prototype/   Fristående webbapp (HTML/JS, ingen build) – läser data från prototype/data/
+analysis/    Node-motor: hämtar kursdata (Yahoo), kör gap-analysen, exporterar till appen
 ```
 
 ## prototype/ – webbappen
 
-Öppna `prototype/index.html` i en webbläsare (eller hosta mappen statiskt, t.ex.
-Cloudflare Pages / Netlify / Vercel). Fyra lägen:
+Starta med `make frontend` (serverar mappen lokalt och öppnar webbläsaren),
+eller hosta mappen statiskt (Cloudflare Pages / Netlify / Vercel). Fyra lägen:
 
 - **Portfölj** – dina innehav i kronor: köp (antal + kurs), utdelning,
   återinvestering, med datum. Avkastning med/utan utdelning. Sparas lokalt.
-- **Jämför** – totalavkastning i % per period, aktie mot aktie.
+- **Jämför** – "om du hade köpt för X kr datum D": alla aktier med utdelningar
+  i kr och %, totalavkastning i kr och %, mot OMX. Klicka på en aktie för
+  årlig utveckling och samtliga utdelningar.
 - **Analys** – utdelnings-gap: hur ofta faller kursen ≥ utdelningen på x-dagen
-  och hur snabbt fylls gapet. Ställbart fönster, öppning/stängning, mot index.
-- **Strategi** – backtest: behålla vs rotera vs index, equity-kurvor + statistik,
-  räknat för ISK.
+  och hur snabbt fylls gapet. Sorterbar jämförelsetabell med utfall per 1 000 kr,
+  filter (dir.avk, fyllnadsgrad, antal x-dagar) och detaljvy per x-dag.
+  Ställbart fönster, öppning/stängning, mot index.
+- **Strategi** – backtest på korgen som Analys-filtren väljer: behålla vs rotera
+  vs index, efter courtage, räknat för ISK. Två urvalslägen: *dagens filter
+  (facit)* och *årlig omscreening (out-of-sample)* – skillnaden mellan dem visar
+  hur mycket urval-i-efterhand smickrar siffrorna.
 
-> Analys- och Strategi-flikarna använder **exempeldata** (tydligt märkt i appen).
-> De finns för att spika metod och vy innan riktig data kopplas in via `analysis/`.
+Appen läser `prototype/data/analysis.json` + `series.json` (skrivs av
+`analysis/src/export.js`). Saknas filerna (t.ex. vid `file://`) faller den
+tillbaka på inbyggd exempeldata, tydligt märkt.
 
 Ingen build, inga beroenden – det är en enda `index.html`.
 
 ## analysis/ – motorn för riktig data
 
-Node-modul (Node 18+) som hämtar riktiga kurser + utdelningar från Yahoo och kör
-gap-fill-analysen. Kör lokalt (kräver öppen internetuppkoppling):
+Node-modul (Node 18+). Rådata cachas per aktie i `analysis/data/history/`
+(committas i repot), så omkörningar hämtar bara svansen sedan sist.
 
 ```bash
 cd analysis
 npm test                                # motorns enhetstester (inget nät)
-node src/cli.js --minYield 3 --basis index
+node src/cli.js --minYield 3 --basis index   # rankad tabell i terminalen
+node src/export.js --cachedOnly --maxAge 24  # exportera till prototype/data/ offline
 npm run validate                        # kolla att universumets tickers finns på Yahoo
 ```
 
-Hela Nasdaq Stockholm Large Cap (~100 bolag) följer med i
-`analysis/data/universe.json`; egna listor läggs till som nya nycklar i samma
-fil (`--universe <namn>`) eller som textfil (`--list`). Se `analysis/README.md`
-för alla flaggor, datakällor och metodik. Genvägar: `make analyze`,
-`make validate`.
+Hela Nasdaq Stockholm Large Cap följer med i `analysis/data/universe.json`;
+egna listor läggs till som nya nycklar i samma fil (`--universe <namn>`) eller
+som textfil (`--list`). Se `analysis/README.md` för alla flaggor, cache,
+datakällor och metodik. Genvägar: `make analyze`, `make validate`.
 
-## Så hänger delarna ihop (roadmap)
+## Daglig uppdatering (GitHub Actions)
 
-1. **Nu:** prototypen visar UI + metod med exempeldata; motorn räknar riktig
-   gap-analys i terminalen.
-2. **Nästa:** ett schemalagt jobb (t.ex. GitHub Actions) kör motorn dagligen och
-   skriver `analysis.json`; prototypens Analys/Strategi-flikar läser den filen i
-   stället för exempeldata. Deploya `prototype/` statiskt → appen i mobilen med
-   riktig data. Ingen server, ingen databas krävs för v1.
-3. **Senare:** backtest-motor (`analysis/src/backtest.js`) med out-of-sample, och
-   ev. molnsynk av portföljen (managed Postgres) när du vill spara den mellan
-   enheter.
+`.github/workflows/uppdatera-data.yml` kör varje vardagkväll efter
+börsstängning (18:30 UTC): inkrementell hämtning → export → auto-commit av
+`analysis/data/` + `prototype/data/`. Kan startas manuellt från Actions-fliken
+("Run workflow"). Kör `git pull` lokalt för att få hem senaste datan.
+
+## Roadmap
+
+1. **Klart:** riktig data i alla flikar, daglig uppdatering via Actions,
+   out-of-sample-backtest.
+2. **Nästa:** deploya `prototype/` statiskt → appen i mobilen. Ingen server,
+   ingen databas krävs.
+3. **Senare:** rotation med flera parallella positioner (dela kapitalet i N
+   högar), och ev. molnsynk av portföljen när den ska sparas mellan enheter.
 
 ## Status
 
-- `prototype/` – fungerar; verifierad i webbläsare (alla fyra lägen).
-- `analysis/` – motor + parser + filter verifierade (enhetstester, `npm test`);
-  live-hämtning mot Yahoo verifierad med riktig data. Yahoo blockerar numera
+- `prototype/` – alla fyra lägen körs mot riktig data (93 utdelare av ~100
+  Large Cap-bolag, 8 år); exempeldata endast som fallback.
+- `analysis/` – motor, parser, cache-merge och filter verifierade med
+  enhetstester (`npm test`); live-hämtning verifierad. Yahoo blockerar
   skript-klienter (429) från vissa nätverk – klienten växlar då automatiskt
   till headless Chrome som hämtare (se `analysis/README.md`, Datakälla).
-
-Exempeldatans *nivåer* är inte verkliga – *mönstren och metoden* är poängen tills
-riktig data är inkopplad.

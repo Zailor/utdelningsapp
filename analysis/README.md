@@ -5,7 +5,8 @@ x-dagen, och mäter **hur många handelsdagar** det tar innan kursen är tillbak
 nivån före. Rankar aktierna efter hur ofta gapet fylls – "mer eller mindre
 garanterat" uttryckt som en frekvens, inte ett löfte.
 
-Det här är analysmotorn för steg 2 (den skarpa versionen av testprototypen).
+Det här är motorn bakom webbappen i `prototype/`: den hämtar och cachar
+rådata, kör analysen och exporterar färdiga JSON-filer som appen läser.
 
 ## Status
 
@@ -15,6 +16,7 @@ Det här är analysmotorn för steg 2 (den skarpa versionen av testprototypen).
 | Yahoo-parser (`src/yahoo.js` · `parseChart`) | ✅ Verifierad mot Yahoo-format i test |
 | Live-hämtning (`fetchChart` + `cli.js`) | ✅ Verifierad mot riktig Yahoo-data (via headless Chrome-fallback vid 429, se Datakälla) |
 | Universum `large-cap` (`data/universe.json`) | ✅ Hela Nasdaq Stockholm Large Cap, tickers verifierade med `npm run validate` |
+| Export till appen (`src/export.js`) | ✅ Skriver `prototype/data/analysis.json` + `series.json`; körs dagligen av GitHub Actions |
 
 ## Kör
 
@@ -22,7 +24,7 @@ Kräver Node 18+ och en **öppen internetuppkoppling** (Yahoo blockeras i låsta
 CI-/sandlådemiljöer).
 
 ```bash
-cd utdelningsanalys
+cd analysis
 npm test                     # kör motorns enhetstester (inget nät krävs)
 
 node src/cli.js                                 # large-cap, 40 dagar, fall@öppning, nominellt
@@ -31,6 +33,9 @@ node src/cli.js --minYield 3                    # bara aktier med dir.avk >= 3%
 node src/cli.js --minEvents 4 --years 10        # kräver >= 4 x-dagar för att rankas
 node src/cli.js --list mina-aktier.txt          # egen lista (en ticker per rad)
 node src/cli.js --symbol INVE-B.ST
+
+node src/export.js                              # hämta + exportera till prototype/data/
+node src/export.js --cachedOnly --maxAge 24     # exportera helt offline från cachen
 ```
 
 ### Flaggor
@@ -151,12 +156,21 @@ Byt datakälla genom att skriva en ny klient med samma form som `yahoo.js`
 (`{ bars, dividends }`). Alternativ vid behov av robusthet: EOD Historical Data
 eller Börsdata (båda betalda, bättre nordisk kvalitet).
 
-## Att visa i mobilen
+## Export till appen och daglig uppdatering
 
-`cli.js` skriver bara en tabell. För en app i telefonen är nästa steg att lägga
-motorn bakom ett litet HTTP-API och koppla på prototypens analysvy som frontend,
-och deploya till en host. API-nyckel/datakälla ligger då säkert på servern, aldrig
-i klienten.
+`src/export.js` skriver två filer som webbappen läser:
+
+- `prototype/data/analysis.json` – gap-statistik per aktie, förberäknad för
+  alla UI-kombinationer (fönster × öppning/stängning × nominellt/index),
+  inklusive detaljer per x-dag och utfall per 1 000 kr.
+- `prototype/data/series.json` – dagliga stängningskurser + utdelningar för
+  alla analyserade aktier och OMX, på indexets handelskalender. Används av
+  Jämför-fliken och strategibacktesten (inkl. out-of-sample-omscreeningen).
+
+`--cachedOnly` kör enbart på aktier som finns i `data/history/` (offline),
+`--maxAge <h>` hoppar över nätverket för färsk cache. GitHub Actions
+(`.github/workflows/uppdatera-data.yml`) kör hämtning + export varje
+vardagkväll och committar resultatet, så `git pull` räcker för färsk data.
 
 ## Struktur
 
@@ -169,8 +183,9 @@ src/stocks.js     inbyggda listor (demo, fallback-large-cap) + OMX-index
 src/universe.js   löser universum: --symbol > --list > universe.json > inbyggt
 src/validate.js   kollar att alla tickers i ett universum finns på Yahoo
 src/cli.js        hämtar (cachat) + filtrerar + analyserar + skriver tabell/JSON
+src/export.js     exporterar analys + kursserier till prototype/data/ (appens datafiler)
 data/universe.json  aktielistor per namn – large-cap (hela) medföljer, egna läggs till här
 data/history/     rådata-cache, en fil per aktie (skapas vid första körningen)
 data/analysis.json  senaste analysresultatet som JSON (skapas av --json)
-test/             enhetstester (node --test) – 19 st
+test/             enhetstester (node --test) – 21 st
 ```
