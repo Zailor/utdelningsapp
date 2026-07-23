@@ -1,0 +1,1260 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avkastning – aktiejämförelse</title>
+</head>
+<body>
+<style>
+  :root {
+    --bg: #f4f6f9; --surface: #ffffff; --surface-2: #eef1f6; --line: #dce1ea;
+    --ink: #1a1f2b; --ink-soft: #565f70; --ink-faint: #8b93a3;
+    --accent: #4b58c9; --accent-ink: #ffffff; --accent-soft: #eaecfb;
+    --gain: #0f9d58; --gain-soft: #e4f6ec; --loss: #d23b45; --loss-soft: #fbe9ea;
+    --tag-buy: #4b58c9; --tag-buy-bg: #eaecfb;
+    --tag-div: #b57d10; --tag-div-bg: #f7edd6;
+    --tag-re: #1d8a86; --tag-re-bg: #d9f0ef;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(20,25,40,.05), 0 8px 24px rgba(20,25,40,.06);
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "SFMono-Regular", "Menlo", "Consolas", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1218; --surface: #171b24; --surface-2: #1e2430; --line: #2a313f;
+      --ink: #e9ecf3; --ink-soft: #a5adbd; --ink-faint: #6d7686;
+      --accent: #7d89f0; --accent-ink: #0f1218; --accent-soft: #232a44;
+      --gain: #34c67a; --gain-soft: #14301f; --loss: #f0666f; --loss-soft: #331519;
+      --tag-buy: #9aa4f5; --tag-buy-bg: #232a44;
+      --tag-div: #e0aa42; --tag-div-bg: #322a15;
+      --tag-re: #43c0bb; --tag-re-bg: #143230;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f6f9; --surface: #ffffff; --surface-2: #eef1f6; --line: #dce1ea;
+    --ink: #1a1f2b; --ink-soft: #565f70; --ink-faint: #8b93a3;
+    --accent: #4b58c9; --accent-ink: #ffffff; --accent-soft: #eaecfb;
+    --gain: #0f9d58; --gain-soft: #e4f6ec; --loss: #d23b45; --loss-soft: #fbe9ea;
+    --tag-buy: #4b58c9; --tag-buy-bg: #eaecfb;
+    --tag-div: #b57d10; --tag-div-bg: #f7edd6;
+    --tag-re: #1d8a86; --tag-re-bg: #d9f0ef;
+    --shadow: 0 1px 2px rgba(20,25,40,.05), 0 8px 24px rgba(20,25,40,.06);
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1218; --surface: #171b24; --surface-2: #1e2430; --line: #2a313f;
+    --ink: #e9ecf3; --ink-soft: #a5adbd; --ink-faint: #6d7686;
+    --accent: #7d89f0; --accent-ink: #0f1218; --accent-soft: #232a44;
+    --gain: #34c67a; --gain-soft: #14301f; --loss: #f0666f; --loss-soft: #331519;
+    --tag-buy: #9aa4f5; --tag-buy-bg: #232a44;
+    --tag-div: #e0aa42; --tag-div-bg: #322a15;
+    --tag-re: #43c0bb; --tag-re-bg: #143230;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); -webkit-text-size-adjust: 100%; line-height: 1.45; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 22px 16px 64px; }
+
+  header { margin-bottom: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; margin: 0 0 4px; }
+  .glyph {
+    width: 30px; height: 30px; border-radius: 9px; flex: none;
+    background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 60%, #c77dff));
+    display: grid; place-items: center;
+  }
+  .glyph svg { width: 18px; height: 18px; }
+  h1 { font-size: 1.32rem; font-weight: 750; letter-spacing: -.02em; margin: 0; text-wrap: balance; }
+
+  .mode-switch {
+    display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 11px; padding: 4px; margin-bottom: 8px; box-shadow: var(--shadow);
+  }
+  .mode-switch button {
+    flex: 1; padding: 10px 4px; font-size: .82rem; font-weight: 650; border-radius: 8px;
+    background: transparent; color: var(--ink-soft); border: none; cursor: pointer;
+    transition: background .12s, color .12s;
+  }
+  .mode-switch button.active { background: var(--accent); color: var(--accent-ink); }
+  .sub-note { color: var(--ink-faint); font-size: .82rem; margin: 4px 4px 16px; line-height: 1.5; }
+  .view { animation: fade .2s ease both; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .view, .stock { animation: none; } }
+
+  .demo-banner {
+    display: flex; gap: 9px; align-items: flex-start;
+    background: var(--tag-div-bg); color: var(--tag-div);
+    border: 1px solid color-mix(in srgb, var(--tag-div) 30%, transparent);
+    border-radius: 11px; padding: 10px 12px; font-size: .8rem; font-weight: 600;
+    margin-bottom: 14px; line-height: 1.45;
+  }
+  .demo-banner svg { width: 17px; height: 17px; flex: none; margin-top: 1px; }
+  .cfg-card { padding: 14px 16px; margin-bottom: 4px; }
+  .cfg-item + .cfg-item { margin-top: 12px; }
+  .cfg-item > span { display: block; font-size: .74rem; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-faint); font-weight: 700; margin-bottom: 6px; }
+  .cfg-seg { display: flex; gap: 4px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 9px; padding: 3px; flex-wrap: wrap; }
+  .cfg-seg button { flex: 1 1 auto; min-width: 64px; padding: 8px 4px; font-size: .82rem; font-weight: 650; border-radius: 7px; background: transparent; color: var(--ink-soft); border: none; cursor: pointer; }
+  .cfg-seg button.active { background: var(--accent); color: var(--accent-ink); }
+  .astat { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: .8rem; color: var(--ink-soft); font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .astat b { color: var(--ink); font-weight: 650; }
+  .evbars { display: flex; gap: 3px; margin-top: 12px; align-items: flex-end; height: 34px; }
+  .evbar { flex: 1; border-radius: 2px 2px 0 0; min-height: 3px; background: var(--gain); opacity: .8; }
+  .evbar.fail { background: var(--loss); opacity: .85; }
+  .aevent { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--surface-2); border-radius: 9px; }
+  .aevent .ad { font-family: var(--mono); font-size: .72rem; color: var(--ink-faint); min-width: 72px; }
+  .aevent .am { flex: 1; font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .82rem; font-weight: 600; }
+  .aevent .ar { font-family: var(--mono); font-size: .82rem; font-weight: 700; white-space: nowrap; }
+
+  .eqchart { width: 100%; height: auto; display: block; background: var(--surface-2); border-radius: 10px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin: 12px 2px 2px; font-size: .82rem; }
+  .legend .lg { display: flex; align-items: center; gap: 7px; color: var(--ink-soft); }
+  .legend .dot { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+  .legend b { color: var(--ink); font-weight: 650; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .stat-table { width: 100%; margin-top: 14px; overflow-x: auto; }
+  .stat-table table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  .stat-table th, .stat-table td { padding: 8px 8px; text-align: right; white-space: nowrap; }
+  .stat-table th { font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); font-weight: 700; border-bottom: 1px solid var(--line); }
+  .stat-table td { font-family: var(--mono); font-variant-numeric: tabular-nums; border-bottom: 1px solid var(--line); }
+  .stat-table td.name, .stat-table th.name { text-align: left; font-family: var(--sans); font-weight: 650; }
+  .stat-table td.name { color: var(--ink); }
+  .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+  .isk-note { font-size: .8rem; color: var(--ink-soft); background: var(--surface-2); border-radius: 10px; padding: 10px 12px; margin-top: 14px; line-height: 1.5; }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .form { padding: 16px; }
+  .form h2 { font-size: .74rem; text-transform: uppercase; letter-spacing: .09em; color: var(--ink-faint); font-weight: 700; margin: 2px 0 14px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field.full { grid-column: 1 / -1; }
+  label { display: block; font-size: .8rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 5px; }
+  label .hint { font-weight: 400; color: var(--ink-faint); }
+  .inputwrap { position: relative; display: flex; align-items: center; }
+  input[type="text"], input[type="number"], input[type="date"] {
+    width: 100%; font-family: var(--sans); font-size: 1rem; color: var(--ink);
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px;
+    padding: 11px 12px; outline: none; transition: border-color .12s, box-shadow .12s;
+  }
+  input.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .inputwrap .suffix { position: absolute; right: 12px; color: var(--ink-faint); font-size: .85rem; pointer-events: none; font-family: var(--mono); }
+  .inputwrap.has-suffix input { padding-right: 42px; }
+  input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+  input::placeholder { color: var(--ink-faint); }
+
+  .btn-row { display: flex; gap: 10px; margin-top: 16px; }
+  button.btn { font-family: var(--sans); font-size: .95rem; font-weight: 650; cursor: pointer; border-radius: 10px; border: 1px solid transparent; padding: 12px 16px; transition: transform .06s, background .12s, border-color .12s; -webkit-tap-highlight-color: transparent; }
+  button.btn:active { transform: scale(.98); }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); flex: 1; }
+  .btn-primary:hover { background: color-mix(in srgb, var(--accent) 88%, #000); }
+  .btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--line); }
+  .btn-ghost:hover { background: var(--surface-2); color: var(--ink); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { button.btn:active { transform: none; } }
+  .err { color: var(--loss); font-size: .82rem; margin: 10px 0 0; }
+
+  .list-head { display: flex; align-items: baseline; justify-content: space-between; margin: 28px 4px 12px; }
+  .list-head h2 { font-size: .74rem; text-transform: uppercase; letter-spacing: .09em; color: var(--ink-faint); font-weight: 700; margin: 0; }
+  .clear-all { background: none; border: none; color: var(--ink-faint); font-size: .8rem; padding: 4px 6px; font-weight: 600; cursor: pointer; }
+  .clear-all:hover { color: var(--loss); }
+  .empty { text-align: center; color: var(--ink-faint); padding: 40px 20px; border: 1px dashed var(--line); border-radius: var(--radius); font-size: .92rem; }
+
+  .stocks { display: flex; flex-direction: column; gap: 12px; }
+  .stock { padding: 15px; position: relative; animation: pop .22s ease both; }
+  @keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .stock-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .stock-name { font-weight: 700; font-size: 1.05rem; letter-spacing: -.01em; }
+  .stock-meta { color: var(--ink-faint); font-size: .78rem; margin-top: 1px; font-family: var(--mono); }
+  .name-input { font-size: 1.02rem; font-weight: 700; padding: 6px 8px; max-width: 200px; }
+  .row-actions { display: flex; gap: 2px; flex: none; }
+  .icon-btn { background: none; border: none; color: var(--ink-faint); padding: 5px; line-height: 1; border-radius: 8px; display: grid; place-items: center; cursor: pointer; }
+  .icon-btn svg { width: 17px; height: 17px; }
+  .icon-btn.del { font-size: 1.1rem; }
+  .icon-btn.edit:hover { color: var(--accent); background: var(--accent-soft); }
+  .icon-btn.del:hover { color: var(--loss); background: var(--loss-soft); }
+
+  .price-line { display: flex; align-items: center; gap: 8px; margin: 10px 0 2px; font-size: .82rem; color: var(--ink-soft); }
+
+  .headline { margin: 12px 0 2px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .headline .pct { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 1.7rem; font-weight: 700; letter-spacing: -.02em; }
+  .headline .abs { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .95rem; font-weight: 600; color: var(--ink-soft); }
+  .headline .lbl { font-size: .72rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .06em; margin-left: auto; text-align: right; }
+  .up { color: var(--gain); } .down { color: var(--loss); } .flat { color: var(--ink-soft); }
+
+  .bar-track { height: 7px; background: var(--surface-2); border-radius: 5px; margin: 12px 0 14px; position: relative; overflow: hidden; }
+  .bar-fill { position: absolute; top: 0; bottom: 0; border-radius: 5px; transition: width .35s ease; }
+  .bar-fill.up { background: var(--gain); } .bar-fill.down { background: var(--loss); }
+
+  .breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .cell { background: var(--surface); padding: 10px 12px; }
+  .cell .k { font-size: .72rem; color: var(--ink-faint); font-weight: 600; }
+  .cell .v { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 1rem; font-weight: 650; margin-top: 3px; }
+  .cell .v small { font-size: .78rem; font-weight: 600; color: var(--ink-soft); }
+  .cell.dividend .v { color: var(--tag-div); }
+
+  .summary { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 12px; font-size: .78rem; color: var(--ink-soft); font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .summary b { color: var(--ink); font-weight: 650; }
+
+  .events-bar { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .toggle-events { background: none; border: none; color: var(--ink-soft); font-weight: 650; font-size: .84rem; padding: 4px 2px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .toggle-events .chev { transition: transform .18s; display: inline-flex; }
+  .toggle-events.open .chev { transform: rotate(90deg); }
+  .add-event { background: var(--accent-soft); color: var(--accent); border: none; font-size: .82rem; font-weight: 650; padding: 7px 12px; border-radius: 9px; cursor: pointer; }
+  .add-event:hover { background: color-mix(in srgb, var(--accent) 20%, var(--surface)); }
+
+  .events-body { margin-top: 10px; }
+  .events { display: flex; flex-direction: column; gap: 6px; }
+  .event-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--surface-2); border-radius: 9px; }
+  .event-tag { flex: none; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 3px 7px; border-radius: 6px; min-width: 66px; text-align: center; }
+  .event-tag.buy { color: var(--tag-buy); background: var(--tag-buy-bg); }
+  .event-tag.dividend { color: var(--tag-div); background: var(--tag-div-bg); }
+  .event-tag.reinvest { color: var(--tag-re); background: var(--tag-re-bg); }
+  .event-main { flex: 1; min-width: 0; }
+  .event-detail { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .86rem; font-weight: 600; }
+  .event-date { font-size: .72rem; color: var(--ink-faint); font-family: var(--mono); margin-top: 1px; }
+  .event-actions { display: flex; gap: 1px; flex: none; }
+  .event-actions .icon-btn svg { width: 15px; height: 15px; }
+  .event-actions .icon-btn.del { font-size: .95rem; }
+
+  .mini-form { margin-top: 8px; padding: 12px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 11px; }
+  .seg { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 3px; margin-bottom: 12px; }
+  .seg button { flex: 1; padding: 8px 4px; font-size: .8rem; font-weight: 650; border-radius: 7px; background: transparent; color: var(--ink-soft); border: none; cursor: pointer; }
+  .seg button.active { background: var(--accent); color: var(--accent-ink); }
+  .mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mini-form input { font-size: .95rem; padding: 9px 10px; }
+  .mini-form label { font-size: .74rem; margin-bottom: 4px; }
+  .mini-form .btn-row { margin-top: 12px; }
+  .mini-form .btn-primary, .mini-form .btn-ghost { padding: 10px 14px; font-size: .9rem; }
+  .mini-err { color: var(--loss); font-size: .78rem; margin: 8px 0 0; }
+
+  footer { text-align: center; color: var(--ink-faint); font-size: .78rem; margin-top: 34px; line-height: 1.6; }
+  .theme-toggle { position: fixed; top: 14px; right: 14px; z-index: 5; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink-soft); display: grid; place-items: center; box-shadow: var(--shadow); padding: 0; cursor: pointer; }
+  .theme-toggle svg { width: 18px; height: 18px; }
+  [hidden] { display: none !important; }
+
+  @media (max-width: 380px) { .grid { grid-template-columns: 1fr; } }
+</style>
+
+<button class="theme-toggle" id="themeToggle" aria-label="Byt ljust/mörkt tema" title="Byt tema">
+  <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+</button>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="glyph" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 4 8-8"/><path d="M14 8h6v6"/></svg>
+      </span>
+      <h1>Avkastning</h1>
+    </div>
+  </header>
+
+  <div class="mode-switch" role="tablist">
+    <button id="modePortfolio" class="active" role="tab">Portfölj</button>
+    <button id="modeCompare" role="tab">Jämför</button>
+    <button id="modeAnalysis" role="tab">Analys</button>
+    <button id="modeStrategy" role="tab">Strategi</button>
+  </div>
+
+  <!-- ============ PORTFOLIO VIEW ============ -->
+  <div class="view" id="portfolioView">
+    <p class="sub-note">Dina faktiska innehav i kronor – ange antal aktier och kurs för varje köp, plus utdelning och återinvestering.</p>
+
+    <section class="card form" id="pForm">
+      <h2>Ny aktie</h2>
+      <div class="grid">
+        <div class="field full">
+          <label for="p_name">Aktie <span class="hint">– namn eller ticker</span></label>
+          <div class="inputwrap"><input type="text" id="p_name" placeholder="t.ex. Investor B" autocomplete="off"></div>
+        </div>
+        <div class="field">
+          <label for="p_curPrice">Nuvarande kurs</label>
+          <div class="inputwrap has-suffix"><input class="num" type="number" id="p_curPrice" inputmode="decimal" step="any" placeholder="= köpkurs"><span class="suffix">kr</span></div>
+        </div>
+        <div class="field">
+          <label for="p_buyDate">Köpdatum</label>
+          <div class="inputwrap"><input type="date" id="p_buyDate"></div>
+        </div>
+        <div class="field">
+          <label for="p_buyShares">Antal aktier</label>
+          <div class="inputwrap has-suffix"><input class="num" type="number" id="p_buyShares" inputmode="decimal" step="any" placeholder="0"><span class="suffix">st</span></div>
+        </div>
+        <div class="field">
+          <label for="p_buyPrice">Köpkurs</label>
+          <div class="inputwrap has-suffix"><input class="num" type="number" id="p_buyPrice" inputmode="decimal" step="any" placeholder="0"><span class="suffix">kr</span></div>
+        </div>
+      </div>
+      <p class="err" id="p_err" role="alert"></p>
+      <div class="btn-row"><button class="btn btn-primary" id="p_add">Lägg till aktie</button></div>
+    </section>
+
+    <div class="list-head">
+      <h2>Din portfölj</h2>
+      <button class="clear-all" id="p_clear" hidden>Rensa alla</button>
+    </div>
+    <div id="stocks" class="stocks"></div>
+
+    <footer>
+      Avkastning inkl. utdelning = marknadsvärde nu + utdelning i fickan − insatt eget kapital.<br>
+      Exkl. utdelning räknar bara kursutvecklingen på det du köpt för egna pengar.
+    </footer>
+  </div>
+
+  <!-- ============ COMPARE VIEW ============ -->
+  <div class="view" id="compareView" hidden>
+    <p class="sub-note">Jämför aktiers totalavkastning i procent över en period – oberoende av hur mycket du köpt. Bra för att se vilken aktie som gått bäst inkl. utdelning.</p>
+
+    <section class="card form" id="cForm">
+      <h2>Aktie att jämföra</h2>
+      <div class="grid">
+        <div class="field full">
+          <label for="c_name">Aktie <span class="hint">– namn eller ticker</span></label>
+          <div class="inputwrap"><input type="text" id="c_name" placeholder="t.ex. Volvo B" autocomplete="off"></div>
+        </div>
+        <div class="field full">
+          <label for="c_period">Period <span class="hint">– valfri etikett</span></label>
+          <div class="inputwrap"><input type="text" id="c_period" placeholder="t.ex. 2023 eller senaste 5 åren" autocomplete="off"></div>
+        </div>
+        <div class="field">
+          <label for="c_start">Startkurs</label>
+          <div class="inputwrap has-suffix"><input class="num" type="number" id="c_start" inputmode="decimal" step="any" placeholder="0"><span class="suffix">kr</span></div>
+        </div>
+        <div class="field">
+          <label for="c_end">Slutkurs / nu</label>
+          <div class="inputwrap has-suffix"><input class="num" type="number" id="c_end" inputmode="decimal" step="any" placeholder="0"><span class="suffix">kr</span></div>
+        </div>
+        <div class="field full">
+          <label for="c_div">Utdelning under perioden <span class="hint">– per aktie, totalt</span></label>
+          <div class="inputwrap has-suffix"><input class="num" type="number" id="c_div" inputmode="decimal" step="any" placeholder="0"><span class="suffix">kr</span></div>
+        </div>
+      </div>
+      <p class="err" id="c_err" role="alert"></p>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="c_add">Lägg till i jämförelsen</button>
+        <button class="btn btn-ghost" id="c_cancel" hidden>Avbryt</button>
+      </div>
+    </section>
+
+    <div class="list-head">
+      <h2>Jämförelse</h2>
+      <button class="clear-all" id="c_clear" hidden>Rensa alla</button>
+    </div>
+    <div id="compares" class="stocks"></div>
+
+    <footer>
+      Total avkastning = (slutkurs − startkurs + utdelning) ÷ startkurs.<br>
+      Exkl. utdelning = bara kursförändringen. Sorterat efter bäst total avkastning.
+    </footer>
+  </div>
+
+  <!-- ============ ANALYSIS VIEW (dividend gap-fill) ============ -->
+  <div class="view" id="analysisView" hidden>
+    <div class="demo-banner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+      <span>Exempeldata – inte riktiga kurser. Prototyp för att spika hur analysen räknas och visas innan vi kopplar in riktig börsdata (steg 2).</span>
+    </div>
+    <p class="sub-note">Hittar aktier vars kurs faller minst lika mycket som utdelningen på x-dagen, och mäter hur snabbt kursen är tillbaka på nivån före. Rankas efter hur ofta gapet fylls inom fönstret.</p>
+
+    <section class="card cfg-card">
+      <div class="cfg-item">
+        <span>Återhämtningsfönster</span>
+        <div class="cfg-seg" id="cfgWindow">
+          <button data-win="20">20 dagar</button>
+          <button data-win="40" class="active">40 dagar</button>
+          <button data-win="60">60 dagar</button>
+          <button data-win="90">90 dagar</button>
+        </div>
+      </div>
+      <div class="cfg-item">
+        <span>Fall mäts på</span>
+        <div class="cfg-seg" id="cfgDropAt">
+          <button data-drop="open" class="active">Öppningskurs</button>
+          <button data-drop="close">Stängningskurs</button>
+        </div>
+      </div>
+      <div class="cfg-item">
+        <span>Återhämtning mäts</span>
+        <div class="cfg-seg" id="cfgBasis">
+          <button data-basis="nominal" class="active">Nominellt (kr)</button>
+          <button data-basis="index">Mot index (OMX)</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="list-head"><h2>Svenska aktier – rankade</h2></div>
+    <div id="analysis" class="stocks"></div>
+
+    <footer>
+      "Fyllde gapet" = kursen (stängning) är tillbaka på nivån dagen före x-dagen inom fönstret.<br>
+      Återhämtning mäts på ojusterat råpris. Frekvens ≠ garanti – se antal x-dagar per aktie.
+    </footer>
+  </div>
+
+  <!-- ============ STRATEGY VIEW (backtest) ============ -->
+  <div class="view" id="strategyView" hidden>
+    <div class="demo-banner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+      <span>Exempeldata – syntetiska men realistiska kursserier. Motorn simulerar strategierna på riktigt; siffrornas nivå är inte verklig utan för att spika metod och vy inför skarp data.</span>
+    </div>
+    <p class="sub-note">Behålla en korg, eller rotera runt och fånga varje utdelning? Backtest på samma kapital och period, index-justerat och efter courtage. Beräknat för ISK.</p>
+
+    <section class="card cfg-card">
+      <div class="cfg-item">
+        <span>Köp (rotation)</span>
+        <div class="cfg-seg" id="stEntry">
+          <button data-entry="5" class="active">5 dgr före x-dag</button>
+          <button data-entry="0">På x-dagen</button>
+        </div>
+      </div>
+      <div class="cfg-item">
+        <span>Sälj (rotation)</span>
+        <div class="cfg-seg" id="stExit">
+          <button data-exit="gap" class="active">När gapet fyllts</button>
+          <button data-exit="ndays">20 dagar</button>
+          <button data-exit="next">Till nästa x-dag</button>
+        </div>
+      </div>
+      <div class="cfg-item">
+        <span>Courtage per affär</span>
+        <div class="cfg-seg" id="stFee">
+          <button data-fee="0.0005">0,05%</button>
+          <button data-fee="0.0015" class="active">0,15%</button>
+          <button data-fee="0.0025">0,25%</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="padding: 15px; margin-top: 12px;">
+      <div id="stChart"></div>
+      <div class="legend" id="stLegend"></div>
+      <div class="stat-table" id="stStats"></div>
+      <div class="isk-note"><b>ISK:</b> ingen utdelningsskatt per tillfälle – utdelningar återinvesteras fullt. Schablonskatten är på kontonivå och drabbar alla strategier lika, så den påverkar inte jämförelsen. Courtage/spread är det som straffar rotationens många affärer.</div>
+    </section>
+
+    <footer>
+      Start = 100 för alla strategier. Index-raden är total-avkastning (OMX + antagen direktavkastning).<br>
+      Rotationen håller en position i taget och jagar nästa x-dag. Out-of-sample och skarp data kommer i steg 2.
+    </footer>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var H_KEY = "avkastning.holdings.v3";
+  var H_KEY_V2 = "avkastning.holdings.v2";
+  var H_KEY_V1 = "avkastning.stocks.v1";
+  var C_KEY = "avkastning.compares.v1";
+  var MODE_KEY = "avkastning.mode";
+  var THEME_KEY = "avkastning.theme";
+
+  var holdings = [];
+  var compares = [];
+  var mode = "portfolio";
+  var editingHoldingId = null;
+  var expanded = {};
+  var eventForm = null;      // { holdingId, txId|null, type }
+  var compareEditId = null;
+
+  // ---------- utils ----------
+  function uid() { return "x" + Date.now().toString(36) + Math.round(performance.now()).toString(36) + Math.round(Math.random() * 1e6).toString(36); }
+  function todayISO() { var d = new Date(), p = function (n) { return (n < 10 ? "0" : "") + n; }; return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()); }
+  function readJSON(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function writeJSON(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+  // ---------- load + migrate ----------
+  function load() {
+    holdings = readJSON(H_KEY);
+    if (!Array.isArray(holdings) || !holdings.length) {
+      var v2 = readJSON(H_KEY_V2);
+      if (Array.isArray(v2) && v2.length) holdings = v2.map(fromV2Holding);
+      else {
+        var v1 = readJSON(H_KEY_V1);
+        holdings = (Array.isArray(v1) && v1.length) ? v1.map(fromV1Holding) : [];
+      }
+      if (holdings.length) saveHoldings();
+    }
+    if (!Array.isArray(holdings)) holdings = [];
+
+    compares = readJSON(C_KEY);
+    if (!Array.isArray(compares)) compares = [];
+
+    var m = null; try { m = localStorage.getItem(MODE_KEY); } catch (e) {}
+    if (m === "compare" || m === "portfolio" || m === "analysis" || m === "strategy") mode = m;
+  }
+  function fromV2Holding(h) {
+    return {
+      id: h.id || uid(), name: h.name, currentPrice: h.currentPrice,
+      tx: (h.tx || []).map(function (t) {
+        if (t.type === "dividend") return { id: t.id || uid(), type: "dividend", date: t.date || "", amount: t.amount };
+        return { id: t.id || uid(), type: t.type, date: t.date || "", shares: (t.price > 0 ? t.amount / t.price : 0), price: t.price };
+      })
+    };
+  }
+  function fromV1Holding(s) {
+    var sh = s.shares || 1;
+    var tx = [{ id: uid(), type: "buy", date: "", shares: sh, price: s.buy }];
+    if (s.div && s.div > 0) tx.push({ id: uid(), type: "dividend", date: "", amount: s.div * sh });
+    return { id: s.id || uid(), name: s.name, currentPrice: s.sell, tx: tx };
+  }
+  function saveHoldings() { writeJSON(H_KEY, holdings); }
+  function saveCompares() { writeJSON(C_KEY, compares); }
+
+  // ---------- math ----------
+  function sharesOf(t) { return t.shares || 0; }
+  function amountOf(t) { return (t.shares || 0) * (t.price || 0); }
+  function computeHolding(h) {
+    var ownCapital = 0, ownShares = 0, reinvestShares = 0, divReceived = 0, divReinvested = 0;
+    h.tx.forEach(function (t) {
+      if (t.type === "buy") { ownCapital += amountOf(t); ownShares += sharesOf(t); }
+      else if (t.type === "reinvest") { divReinvested += amountOf(t); reinvestShares += sharesOf(t); }
+      else if (t.type === "dividend") { divReceived += t.amount; }
+    });
+    var shares = ownShares + reinvestShares;
+    var price = h.currentPrice || 0;
+    var marketValue = shares * price;
+    var divCash = divReceived - divReinvested;
+    var priceValue = ownShares * price;
+    var priceAbs = priceValue - ownCapital;
+    var totalAbs = marketValue + divCash - ownCapital;
+    var divAbs = totalAbs - priceAbs;
+    var has = ownCapital > 0;
+    return {
+      ownCapital: ownCapital, shares: shares, marketValue: marketValue,
+      divReceived: divReceived, priceAbs: priceAbs, totalAbs: totalAbs, divAbs: divAbs,
+      pricePct: has ? priceAbs / ownCapital * 100 : null,
+      totalPct: has ? totalAbs / ownCapital * 100 : null,
+      divPct: has ? divAbs / ownCapital * 100 : null
+    };
+  }
+  function computeCompare(c) {
+    var start = c.start, end = c.end, div = c.div || 0;
+    var has = start > 0;
+    return {
+      pricePct: has ? (end - start) / start * 100 : null,
+      totalPct: has ? (end - start + div) / start * 100 : null,
+      divPct: has ? div / start * 100 : null
+    };
+  }
+
+  // ---------- formatting ----------
+  var nf2 = new Intl.NumberFormat("sv-SE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  var nfSh = new Intl.NumberFormat("sv-SE", { minimumFractionDigits: 0, maximumFractionDigits: 4 });
+  function sgn(n) { return n > 1e-9 ? "+" : (n < -1e-9 ? "−" : ""); }
+  function pct(n) { return n === null ? "–" : sgn(n) + nf2.format(Math.abs(n)) + " %"; }
+  function kr(n) { return sgn(n) + nf2.format(Math.abs(n)) + " kr"; }
+  function krPlain(n) { return nf2.format(n) + " kr"; }
+  function cls(n) { return n === null ? "flat" : (n > 1e-9 ? "up" : (n < -1e-9 ? "down" : "flat")); }
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  var TAG_LABEL = { buy: "Köp", dividend: "Utdelning", reinvest: "Återinv." };
+
+  // ---------- shared bar helper ----------
+  function maxOf(list) {
+    var m = Math.max.apply(null, list.map(function (v) { return v === null ? 0 : Math.abs(v); }));
+    return m === 0 ? 1 : m;
+  }
+
+  // ================= PORTFOLIO RENDER =================
+  var stocksEl = document.getElementById("stocks");
+  var pClear = document.getElementById("p_clear");
+
+  function renderPortfolio() {
+    stocksEl.innerHTML = "";
+    pClear.hidden = holdings.length === 0;
+    if (!holdings.length) { stocksEl.appendChild(emptyEl("Inga aktier än. Lägg till din första ovan.")); return; }
+    var computed = holdings.map(function (h) { return { h: h, c: computeHolding(h) }; });
+    computed.sort(function (a, b) { return valOr(b.c.totalPct) - valOr(a.c.totalPct); });
+    var maxAbs = maxOf(computed.map(function (x) { return x.c.totalPct; }));
+    computed.forEach(function (x) { stocksEl.appendChild(buildHoldingCard(x.h, x.c, maxAbs)); });
+  }
+  function valOr(v) { return v === null ? -Infinity : v; }
+  function emptyEl(txt) { var e = document.createElement("div"); e.className = "empty"; e.textContent = txt; return e; }
+
+  function buildHoldingCard(h, c, maxAbs) {
+    var card = document.createElement("div");
+    card.className = "card stock";
+    var barW = Math.max(2, (c.totalPct === null ? 0 : Math.abs(c.totalPct)) / maxAbs * 100);
+    var editingName = editingHoldingId === h.id;
+
+    card.innerHTML =
+      '<div class="stock-top">' +
+        (editingName ? '<input class="name-input" data-role="nameInput" value="' + esc(h.name) + '">' : '<div class="stock-name">' + esc(h.name) + '</div>') +
+        '<div class="row-actions">' +
+          (editingName
+            ? '<button class="icon-btn edit" data-role="saveName" title="Spara namn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>'
+            : '<button class="icon-btn edit" data-role="editName" title="Byt namn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>') +
+          '<button class="icon-btn del" data-role="delHolding" title="Ta bort aktie">✕</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="price-line">Nuvarande kurs' +
+        '<div class="inputwrap has-suffix" style="width:112px"><input class="num" data-role="curPrice" type="number" inputmode="decimal" step="any" value="' + (h.currentPrice != null ? h.currentPrice : "") + '" style="padding:7px 9px;font-size:.92rem"><span class="suffix">kr</span></div>' +
+      '</div>' +
+      '<div class="headline">' +
+        '<span class="pct ' + cls(c.totalPct) + '">' + pct(c.totalPct) + '</span>' +
+        '<span class="abs ' + cls(c.totalAbs) + '">' + kr(c.totalAbs) + '</span>' +
+        '<span class="lbl">Total avkastning</span>' +
+      '</div>' +
+      '<div class="bar-track"><div class="bar-fill ' + cls(c.totalPct) + '" style="width:' + barW + '%"></div></div>' +
+      '<div class="breakdown">' +
+        '<div class="cell"><div class="k">Exkl. utdelning (kurs)</div><div class="v ' + cls(c.pricePct) + '">' + pct(c.pricePct) + ' <small>' + kr(c.priceAbs) + '</small></div></div>' +
+        '<div class="cell dividend"><div class="k">Utdelningens bidrag</div><div class="v">' + pct(c.divPct) + ' <small>' + kr(c.divAbs) + '</small></div></div>' +
+      '</div>' +
+      '<div class="summary">' +
+        '<span>Insatt <b>' + krPlain(c.ownCapital) + '</b></span>' +
+        '<span>Aktier <b>' + nfSh.format(c.shares) + '</b></span>' +
+        '<span>Värde nu <b>' + krPlain(c.marketValue) + '</b></span>' +
+        '<span>Utdelning <b>' + krPlain(c.divReceived) + '</b></span>' +
+      '</div>' +
+      '<div class="events-bar">' +
+        '<button class="toggle-events' + (expanded[h.id] ? ' open' : '') + '" data-role="toggle"><span class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>Händelser (' + h.tx.length + ')</button>' +
+        '<button class="add-event" data-role="addEvent">+ Lägg till</button>' +
+      '</div>' +
+      '<div class="events-body" data-role="body"></div>';
+
+    card.querySelector('[data-role="delHolding"]').addEventListener("click", function () {
+      if (confirm('Ta bort "' + h.name + '" och alla dess händelser?')) {
+        holdings = holdings.filter(function (o) { return o.id !== h.id; });
+        if (editingHoldingId === h.id) editingHoldingId = null;
+        if (eventForm && eventForm.holdingId === h.id) eventForm = null;
+        saveHoldings(); renderPortfolio();
+      }
+    });
+    if (editingName) {
+      var ni = card.querySelector('[data-role="nameInput"]');
+      var saveN = function () { var v = ni.value.trim(); if (v) h.name = v; editingHoldingId = null; saveHoldings(); renderPortfolio(); };
+      card.querySelector('[data-role="saveName"]').addEventListener("click", saveN);
+      ni.addEventListener("keydown", function (ev) { if (ev.key === "Enter") saveN(); });
+      setTimeout(function () { ni.focus(); ni.select(); }, 0);
+    } else {
+      card.querySelector('[data-role="editName"]').addEventListener("click", function () { editingHoldingId = h.id; renderPortfolio(); });
+    }
+    var pi = card.querySelector('[data-role="curPrice"]');
+    pi.addEventListener("change", function () { var v = parseFloat(pi.value.replace(",", ".")); h.currentPrice = isNaN(v) ? 0 : v; saveHoldings(); renderPortfolio(); });
+    card.querySelector('[data-role="toggle"]').addEventListener("click", function () {
+      expanded[h.id] = !expanded[h.id];
+      if (!expanded[h.id] && eventForm && eventForm.holdingId === h.id) eventForm = null;
+      renderPortfolio();
+    });
+    card.querySelector('[data-role="addEvent"]').addEventListener("click", function () {
+      expanded[h.id] = true; eventForm = { holdingId: h.id, txId: null, type: "buy" }; renderPortfolio();
+    });
+    var body = card.querySelector('[data-role="body"]');
+    if (expanded[h.id]) renderEvents(body, h); else body.style.display = "none";
+    return card;
+  }
+
+  function renderEvents(body, h) {
+    body.innerHTML = "";
+    var list = document.createElement("div"); list.className = "events";
+    h.tx.slice().sort(function (a, b) { return (a.date || "9999") < (b.date || "9999") ? -1 : 1; })
+      .forEach(function (t) { list.appendChild(buildEventRow(h, t)); });
+    body.appendChild(list);
+    if (eventForm && eventForm.holdingId === h.id) body.appendChild(buildEventForm(h));
+  }
+
+  function buildEventRow(h, t) {
+    var row = document.createElement("div"); row.className = "event-row";
+    var detail, sub = (t.date || "utan datum");
+    if (t.type === "dividend") { detail = "+" + krPlain(t.amount); }
+    else { detail = nfSh.format(sharesOf(t)) + " st @ " + nf2.format(t.price) + " kr"; sub += "  ·  " + krPlain(amountOf(t)); }
+    row.innerHTML =
+      '<span class="event-tag ' + t.type + '">' + TAG_LABEL[t.type] + '</span>' +
+      '<div class="event-main"><div class="event-detail">' + detail + '</div><div class="event-date">' + esc(sub) + '</div></div>' +
+      '<div class="event-actions">' +
+        '<button class="icon-btn edit" data-role="editTx" title="Redigera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>' +
+        '<button class="icon-btn del" data-role="delTx" title="Ta bort">✕</button>' +
+      '</div>';
+    row.querySelector('[data-role="delTx"]').addEventListener("click", function () {
+      h.tx = h.tx.filter(function (o) { return o.id !== t.id; });
+      if (eventForm && eventForm.txId === t.id) eventForm = null;
+      saveHoldings(); renderPortfolio();
+    });
+    row.querySelector('[data-role="editTx"]').addEventListener("click", function () {
+      eventForm = { holdingId: h.id, txId: t.id, type: t.type }; renderPortfolio();
+    });
+    return row;
+  }
+
+  function buildEventForm(h) {
+    var isEdit = !!eventForm.txId;
+    var ex = isEdit ? h.tx.filter(function (o) { return o.id === eventForm.txId; })[0] : null;
+    var type = eventForm.type;
+    var wrap = document.createElement("div"); wrap.className = "mini-form";
+    var isDiv = type === "dividend";
+
+    wrap.innerHTML =
+      '<div class="seg" data-role="seg">' +
+        '<button data-type="buy" class="' + (type === "buy" ? "active" : "") + '">Köp</button>' +
+        '<button data-type="dividend" class="' + (isDiv ? "active" : "") + '">Utdelning</button>' +
+        '<button data-type="reinvest" class="' + (type === "reinvest" ? "active" : "") + '">Återinv.</button>' +
+      '</div>' +
+      '<div class="mini-grid">' +
+        '<div class="field"><label>Datum</label><div class="inputwrap"><input type="date" data-role="date" value="' + esc(ex && ex.date ? ex.date : todayISO()) + '"></div></div>' +
+        (isDiv
+          ? '<div class="field"><label>Utdelning (kr)</label><div class="inputwrap has-suffix"><input class="num" type="number" inputmode="decimal" step="any" data-role="amount" value="' + (ex ? ex.amount : "") + '" placeholder="0"><span class="suffix">kr</span></div></div>'
+          : '<div class="field"><label>Antal aktier</label><div class="inputwrap has-suffix"><input class="num" type="number" inputmode="decimal" step="any" data-role="shares" value="' + (ex && ex.shares != null ? ex.shares : "") + '" placeholder="0"><span class="suffix">st</span></div></div>' +
+            '<div class="field"><label>Kurs</label><div class="inputwrap has-suffix"><input class="num" type="number" inputmode="decimal" step="any" data-role="price" value="' + (ex && ex.price != null ? ex.price : "") + '" placeholder="0"><span class="suffix">kr</span></div></div>') +
+      '</div>' +
+      '<p class="mini-err" data-role="miniErr"></p>' +
+      '<div class="btn-row">' +
+        '<button class="btn btn-primary" data-role="saveTx">' + (isEdit ? "Spara ändringar" : "Lägg till händelse") + '</button>' +
+        '<button class="btn btn-ghost" data-role="cancelTx">Avbryt</button>' +
+      '</div>';
+
+    wrap.querySelectorAll('[data-role="seg"] button').forEach(function (b) {
+      b.addEventListener("click", function () { eventForm.type = b.getAttribute("data-type"); renderPortfolio(); });
+    });
+    wrap.querySelector('[data-role="cancelTx"]').addEventListener("click", function () { eventForm = null; renderPortfolio(); });
+    wrap.querySelector('[data-role="saveTx"]').addEventListener("click", function () { saveTx(h, wrap); });
+    return wrap;
+  }
+
+  function saveTx(h, wrap) {
+    var errEl = wrap.querySelector('[data-role="miniErr"]'); errEl.textContent = "";
+    var type = eventForm.type;
+    var date = wrap.querySelector('[data-role="date"]').value;
+    function f(role) { var el = wrap.querySelector('[data-role="' + role + '"]'); return el ? parseFloat((el.value || "").replace(",", ".")) : null; }
+
+    if (type === "dividend") {
+      var amt = f("amount");
+      if (isNaN(amt) || amt <= 0) { errEl.textContent = "Ange en utdelning större än noll."; return; }
+      writeTx(h, { type: "dividend", date: date, amount: amt });
+    } else {
+      var sh = f("shares"), pr = f("price");
+      if (isNaN(sh) || sh <= 0) { errEl.textContent = "Ange antal aktier större än noll."; return; }
+      if (isNaN(pr) || pr <= 0) { errEl.textContent = "Ange en kurs större än noll."; return; }
+      writeTx(h, { type: type, date: date, shares: sh, price: pr });
+    }
+    eventForm = null; saveHoldings(); renderPortfolio();
+  }
+  function writeTx(h, data) {
+    if (eventForm.txId) {
+      var t = h.tx.filter(function (o) { return o.id === eventForm.txId; })[0];
+      if (t) { for (var k in t) if (k !== "id") delete t[k]; t.id = t.id || uid(); Object.assign(t, data); }
+    } else { data.id = uid(); h.tx.push(data); }
+  }
+
+  // top form: add holding
+  var pErr = document.getElementById("p_err");
+  function pNum(id) { var v = document.getElementById(id).value.trim().replace(",", "."); if (v === "") return null; var n = parseFloat(v); return isNaN(n) ? NaN : n; }
+  function addHolding() {
+    pErr.textContent = "";
+    var name = document.getElementById("p_name").value.trim();
+    var cur = pNum("p_curPrice"), shares = pNum("p_buyShares"), price = pNum("p_buyPrice");
+    var date = document.getElementById("p_buyDate").value;
+    if (!name) return pFail("Ange ett namn eller en ticker.");
+    if (shares === null || price === null) return pFail("Fyll i både antal aktier och köpkurs.");
+    if (isNaN(shares) || isNaN(price) || (cur !== null && isNaN(cur))) return pFail("Antal och kurser måste vara siffror.");
+    if (shares <= 0) return pFail("Antal aktier måste vara större än noll.");
+    if (price <= 0) return pFail("Köpkursen måste vara större än noll.");
+    if (cur !== null && cur < 0) return pFail("Kursen kan inte vara negativ.");
+    holdings.push({ id: uid(), name: name, currentPrice: (cur === null ? price : cur), tx: [{ id: uid(), type: "buy", date: date, shares: shares, price: price }] });
+    saveHoldings(); renderPortfolio();
+    ["p_name", "p_curPrice", "p_buyDate", "p_buyShares", "p_buyPrice"].forEach(function (id) { document.getElementById(id).value = ""; });
+    document.getElementById("p_buyDate").value = todayISO();
+    document.getElementById("p_name").focus();
+  }
+  function pFail(m) { pErr.textContent = m; return false; }
+  document.getElementById("p_add").addEventListener("click", addHolding);
+  document.getElementById("pForm").addEventListener("keydown", function (e) { if (e.key === "Enter" && e.target.tagName === "INPUT") { e.preventDefault(); addHolding(); } });
+  pClear.addEventListener("click", function () { if (confirm("Ta bort alla aktier ur portföljen?")) { holdings = []; saveHoldings(); renderPortfolio(); } });
+
+  // ================= COMPARE RENDER =================
+  var comparesEl = document.getElementById("compares");
+  var cClear = document.getElementById("c_clear");
+
+  function renderCompare() {
+    comparesEl.innerHTML = "";
+    cClear.hidden = compares.length === 0;
+    if (!compares.length) { comparesEl.appendChild(emptyEl("Inga aktier att jämföra än. Lägg till ovan.")); return; }
+    var computed = compares.map(function (c) { return { c: c, m: computeCompare(c) }; });
+    computed.sort(function (a, b) { return valOr(b.m.totalPct) - valOr(a.m.totalPct); });
+    var maxAbs = maxOf(computed.map(function (x) { return x.m.totalPct; }));
+    computed.forEach(function (x) { comparesEl.appendChild(buildCompareCard(x.c, x.m, maxAbs)); });
+  }
+
+  function buildCompareCard(c, m, maxAbs) {
+    var card = document.createElement("div"); card.className = "card stock";
+    var barW = Math.max(2, (m.totalPct === null ? 0 : Math.abs(m.totalPct)) / maxAbs * 100);
+    var meta = [];
+    if (c.period) meta.push(esc(c.period));
+    meta.push(nf2.format(c.start) + " → " + nf2.format(c.end) + " kr");
+    if (c.div) meta.push("utd. " + nf2.format(c.div) + " kr");
+
+    card.innerHTML =
+      '<div class="stock-top">' +
+        '<div><div class="stock-name">' + esc(c.name) + '</div><div class="stock-meta">' + meta.join("  ·  ") + '</div></div>' +
+        '<div class="row-actions">' +
+          '<button class="icon-btn edit" data-role="editC" title="Redigera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>' +
+          '<button class="icon-btn del" data-role="delC" title="Ta bort">✕</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="headline">' +
+        '<span class="pct ' + cls(m.totalPct) + '">' + pct(m.totalPct) + '</span>' +
+        '<span class="lbl">Total avkastning<br>inkl. utdelning</span>' +
+      '</div>' +
+      '<div class="bar-track"><div class="bar-fill ' + cls(m.totalPct) + '" style="width:' + barW + '%"></div></div>' +
+      '<div class="breakdown">' +
+        '<div class="cell"><div class="k">Exkl. utdelning (kurs)</div><div class="v ' + cls(m.pricePct) + '">' + pct(m.pricePct) + '</div></div>' +
+        '<div class="cell dividend"><div class="k">Utdelningens bidrag</div><div class="v">' + pct(m.divPct) + '</div></div>' +
+      '</div>';
+
+    card.querySelector('[data-role="delC"]').addEventListener("click", function () {
+      compares = compares.filter(function (o) { return o.id !== c.id; });
+      if (compareEditId === c.id) resetCompareForm();
+      saveCompares(); renderCompare();
+    });
+    card.querySelector('[data-role="editC"]').addEventListener("click", function () { startEditCompare(c); });
+    return card;
+  }
+
+  // compare top form
+  var cErr = document.getElementById("c_err");
+  var cAddBtn = document.getElementById("c_add");
+  var cCancelBtn = document.getElementById("c_cancel");
+  var cFormTitle = document.querySelector("#cForm h2");
+  function cNum(id) { var v = document.getElementById(id).value.trim().replace(",", "."); if (v === "") return null; var n = parseFloat(v); return isNaN(n) ? NaN : n; }
+  function addCompare() {
+    cErr.textContent = "";
+    var name = document.getElementById("c_name").value.trim();
+    var start = cNum("c_start"), end = cNum("c_end"), div = cNum("c_div");
+    if (!name) return cFail("Ange ett namn eller en ticker.");
+    if (start === null || end === null) return cFail("Fyll i både startkurs och slutkurs.");
+    if (isNaN(start) || isNaN(end) || (div !== null && isNaN(div))) return cFail("Kurser måste vara siffror.");
+    if (start <= 0) return cFail("Startkursen måste vara större än noll.");
+    if (end < 0 || (div !== null && div < 0)) return cFail("Kurser kan inte vara negativa.");
+    var data = { name: name, period: document.getElementById("c_period").value.trim(), start: start, end: end, div: div === null ? 0 : div };
+    if (compareEditId) {
+      var t = compares.filter(function (o) { return o.id === compareEditId; })[0];
+      if (t) Object.assign(t, data);
+      resetCompareForm();
+    } else { data.id = uid(); compares.push(data); clearCompareInputs(); }
+    saveCompares(); renderCompare();
+    document.getElementById("c_name").focus();
+  }
+  function cFail(m) { cErr.textContent = m; return false; }
+  function clearCompareInputs() { ["c_name", "c_period", "c_start", "c_end", "c_div"].forEach(function (id) { document.getElementById(id).value = ""; }); }
+  function startEditCompare(c) {
+    compareEditId = c.id;
+    document.getElementById("c_name").value = c.name;
+    document.getElementById("c_period").value = c.period || "";
+    document.getElementById("c_start").value = c.start;
+    document.getElementById("c_end").value = c.end;
+    document.getElementById("c_div").value = c.div || "";
+    cErr.textContent = ""; cAddBtn.textContent = "Spara ändringar"; cCancelBtn.hidden = false;
+    cFormTitle.textContent = "Redigera " + c.name;
+    document.getElementById("cForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("c_name").focus();
+    renderCompare();
+  }
+  function resetCompareForm() { compareEditId = null; clearCompareInputs(); cErr.textContent = ""; cAddBtn.textContent = "Lägg till i jämförelsen"; cCancelBtn.hidden = true; cFormTitle.textContent = "Aktie att jämföra"; }
+  cAddBtn.addEventListener("click", addCompare);
+  cCancelBtn.addEventListener("click", function () { resetCompareForm(); renderCompare(); });
+  document.getElementById("cForm").addEventListener("keydown", function (e) { if (e.key === "Enter" && e.target.tagName === "INPUT") { e.preventDefault(); addCompare(); } });
+  cClear.addEventListener("click", function () { if (confirm("Ta bort alla aktier ur jämförelsen?")) { compares = []; saveCompares(); renderCompare(); } });
+
+  // ================= ANALYSIS (dividend gap-fill) — DEMO data =================
+  var SAMPLE = [
+    ["Investor B", [
+      ["2019-05-08", 4.00, 236, 4.2, 4.6, 4], ["2020-05-19", 3.00, 168, 3.3, 3.8, 9],
+      ["2021-05-06", 4.00, 205, 4.1, 4.4, 3], ["2022-05-05", 4.40, 197, 4.6, 5.0, 7],
+      ["2023-05-04", 4.80, 195, 4.9, 5.3, 5], ["2024-05-08", 5.20, 258, 5.1, 5.6, 6]
+    ]],
+    ["Atlas Copco A", [
+      ["2019-04-25", 3.00, 152, 3.1, 3.4, 3], ["2020-10-21", 2.00, 155, 2.1, 2.4, 6],
+      ["2021-04-28", 3.20, 168, 3.3, 3.6, 2], ["2022-04-27", 3.40, 148, 3.6, 3.9, 8],
+      ["2023-04-26", 2.65, 138, 2.7, 3.0, 4], ["2024-04-24", 2.80, 165, 2.8, 3.1, 5]
+    ]],
+    ["Axfood", [
+      ["2019-03-14", 7.00, 168, 7.1, 7.5, 8], ["2020-03-12", 7.00, 175, 7.2, 7.7, 11],
+      ["2021-03-11", 7.25, 205, 7.3, 7.8, 9], ["2022-03-10", 7.75, 258, 7.8, 8.3, 13],
+      ["2023-03-09", 8.00, 268, 8.1, 8.6, 10], ["2024-03-14", 8.00, 245, 8.0, 8.5, 12]
+    ]],
+    ["Handelsbanken A", [
+      ["2019-03-28", 5.50, 104, 5.6, 6.0, 12], ["2021-04-29", 4.10, 92, 4.2, 4.6, 15],
+      ["2022-04-28", 5.00, 98, 5.2, 5.6, 10], ["2023-03-30", 5.50, 108, 5.6, 6.1, 18],
+      ["2024-03-27", 7.00, 105, 7.1, 7.6, 14]
+    ]],
+    ["Volvo B", [
+      ["2018-04-05", 4.25, 148, 4.4, 4.9, 45], ["2019-04-09", 5.50, 138, 5.6, 6.2, 16],
+      ["2021-04-22", 6.00, 205, 6.3, 7.0, 22], ["2022-03-31", 6.50, 175, 7.0, 7.8, 30],
+      ["2023-03-30", 7.00, 195, 7.4, 8.2, 12], ["2024-04-04", 7.50, 268, 7.6, 8.4, 999]
+    ]],
+    ["H&M B", [
+      ["2018-05-09", 9.75, 128, 9.9, 10.7, 55], ["2019-05-08", 9.75, 138, 9.9, 10.6, 35],
+      ["2021-11-11", 6.50, 178, 6.7, 7.2, 999], ["2022-05-11", 6.50, 148, 6.7, 7.3, 45],
+      ["2023-05-10", 6.50, 158, 6.7, 7.2, 30], ["2024-05-08", 6.50, 185, 6.6, 7.1, 20]
+    ]],
+    ["Castellum", [
+      ["2018-03-22", 5.30, 133, 5.4, 5.8, 20], ["2019-03-21", 6.10, 168, 6.2, 6.7, 25],
+      ["2021-03-25", 6.50, 218, 6.6, 7.1, 30], ["2022-03-24", 6.90, 233, 7.2, 7.9, 999],
+      ["2023-03-23", 7.60, 128, 7.9, 8.6, 999]
+    ]],
+    ["Telia", [
+      ["2018-04-11", 2.30, 41, 2.4, 2.7, 40], ["2019-04-11", 2.36, 42, 2.5, 2.8, 55],
+      ["2020-04-08", 2.45, 36, 2.6, 2.9, 999], ["2021-04-07", 2.00, 36, 2.1, 2.4, 60],
+      ["2022-04-06", 2.05, 40, 2.2, 2.5, 999], ["2023-04-05", 2.05, 30, 2.2, 2.5, 999]
+    ]]
+  ];
+  var YEAR_DRIFT = { "2018": 0.0006, "2019": 0.0012, "2020": 0.0004, "2021": 0.0015, "2022": -0.0008, "2023": 0.0010, "2024": 0.0011 };
+  var analysisCfg = { window: 40, dropAt: "open", basis: "nominal" };
+  try {
+    var _ac = JSON.parse(localStorage.getItem("avkastning.analysisCfg"));
+    if (_ac && _ac.window) analysisCfg = { window: _ac.window, dropAt: _ac.dropAt === "close" ? "close" : "open", basis: _ac.basis === "index" ? "index" : "nominal" };
+  } catch (e) {}
+  var expandedA = {};
+
+  function evObj(name, a) { return { stock: name, date: a[0], div: a[1], pre: a[2], dropClose: a[3], dropOpen: a[4], rec: a[5] }; }
+  function buildSeries(ev, window) {
+    var exClose = ev.pre - ev.dropClose, len = window + 1, out = [];
+    var fail = ev.rec > 900 || ev.rec <= 0;
+    for (var i = 0; i < len; i++) {
+      var v;
+      if (fail) {
+        var cap = exClose + (ev.pre - exClose) * 0.9;
+        v = exClose + (cap - exClose) * (1 - Math.exp(-i / (window * 0.35)));
+        if (v > ev.pre - 0.5) v = ev.pre - 0.5;
+      } else if (i >= ev.rec) {
+        v = ev.pre + (ev.pre - exClose) * 0.05 * (i - ev.rec);
+      } else {
+        v = exClose + (ev.pre - exClose) * (i / ev.rec);
+      }
+      out.push(v);
+    }
+    return out;
+  }
+  function analyzeEvent(ev, cfg) {
+    var series = buildSeries(ev, cfg.window);
+    var drop = cfg.dropAt === "open" ? ev.dropOpen : ev.dropClose;
+    var drift = cfg.basis === "index" ? (YEAR_DRIFT[ev.date.slice(0, 4)] || 0.0008) : 0;
+    var rec = null;
+    for (var i = 1; i < series.length; i++) {
+      var threshold = drift ? ev.pre * Math.pow(1 + drift, i) : ev.pre;
+      if (series[i] >= threshold - 1e-9) { rec = i; break; }
+    }
+    return { date: ev.date, div: ev.div, pre: ev.pre, drop: drop, ratio: drop / ev.div, fell: drop >= ev.div, recovery: rec, recovered: rec !== null };
+  }
+  function median(arr) { if (!arr.length) return null; var s = arr.slice().sort(function (a, b) { return a - b; }); var m = Math.floor(s.length / 2); return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; }
+  function mean(arr) { return arr.length ? arr.reduce(function (a, b) { return a + b; }, 0) / arr.length : null; }
+  function analyzeStock(name, events, cfg) {
+    var res = events.map(function (a) { return analyzeEvent(evObj(name, a), cfg); });
+    var recovered = res.filter(function (r) { return r.recovered; });
+    var n = res.length;
+    var recDays = recovered.map(function (r) { return r.recovery; });
+    var maxYear = Math.max.apply(null, res.map(function (r) { return parseInt(r.date.slice(0, 4), 10); }));
+    var recent = res.filter(function (r) { return parseInt(r.date.slice(0, 4), 10) >= maxYear - 2; });
+    var recentRec = recent.filter(function (r) { return r.recovered; }).length;
+    return {
+      name: name, n: n, events: res,
+      fillRate: n ? recovered.length / n * 100 : 0,
+      medianRec: median(recDays),
+      fellRate: n ? res.filter(function (r) { return r.fell; }).length / n * 100 : 0,
+      avgRatio: mean(res.map(function (r) { return r.ratio; })),
+      maxRec: recDays.length ? Math.max.apply(null, recDays) : null,
+      recentFill: recent.length ? recentRec / recent.length * 100 : null,
+      years: [res[0].date.slice(0, 4), res[res.length - 1].date.slice(0, 4)]
+    };
+  }
+  var analysisEl = document.getElementById("analysis");
+  function renderAnalysis() {
+    analysisEl.innerHTML = "";
+    var stats = SAMPLE.map(function (s) { return analyzeStock(s[0], s[1], analysisCfg); });
+    stats.sort(function (a, b) {
+      if (Math.abs(b.fillRate - a.fillRate) > 0.01) return b.fillRate - a.fillRate;
+      var am = a.medianRec === null ? 1e9 : a.medianRec, bm = b.medianRec === null ? 1e9 : b.medianRec;
+      if (am !== bm) return am - bm;
+      return b.fellRate - a.fellRate;
+    });
+    stats.forEach(function (st) { analysisEl.appendChild(buildAnalysisCard(st)); });
+  }
+  function buildAnalysisCard(st) {
+    var card = document.createElement("div"); card.className = "card stock";
+    var fill = Math.round(st.fillRate);
+    var pctCls = st.fillRate >= 66 ? "up" : (st.fillRate >= 33 ? "flat" : "down");
+    var bars = st.events.map(function (r) {
+      if (r.recovered) return '<div class="evbar" style="height:' + Math.max(8, r.recovery / analysisCfg.window * 100) + '%" title="' + r.date + ": " + r.recovery + ' dagar"></div>';
+      return '<div class="evbar fail" style="height:100%" title="' + r.date + ': ej inom fönstret"></div>';
+    }).join("");
+    var medTxt = st.medianRec === null ? "–" : nfSh.format(st.medianRec) + " dagar";
+    card.innerHTML =
+      '<div class="stock-top"><div><div class="stock-name">' + esc(st.name) + '</div>' +
+        '<div class="stock-meta">' + st.years[0] + '–' + st.years[1] + '  ·  ' + st.n + ' x-dagar</div></div></div>' +
+      '<div class="headline"><span class="pct ' + pctCls + '">' + fill + ' %</span>' +
+        '<span class="lbl">Fyllde gapet<br>inom ' + analysisCfg.window + ' dagar</span></div>' +
+      '<div class="bar-track"><div class="bar-fill ' + (pctCls === "down" ? "down" : "up") + '" style="width:' + fill + '%"></div></div>' +
+      '<div class="astat">' +
+        '<span>Median återhämtning <b>' + medTxt + '</b></span>' +
+        '<span>Föll ≥ utdelning <b>' + Math.round(st.fellRate) + ' %</b></span>' +
+        '<span>Antal x-dagar <b>' + st.n + '</b></span>' +
+      '</div>' +
+      '<div class="astat">' +
+        '<span>Snitt fall ÷ utd <b>' + nf2.format(st.avgRatio) + '×</b></span>' +
+        '<span>Längsta återhämtning <b>' + (st.maxRec === null ? "–" : st.maxRec + " dagar") + '</b></span>' +
+        '<span>Senaste 3 åren <b>' + (st.recentFill === null ? "–" : Math.round(st.recentFill) + " %") + '</b></span>' +
+      '</div>' +
+      '<div class="evbars">' + bars + '</div>';
+    return card;
+  }
+  function saveACfg() { try { localStorage.setItem("avkastning.analysisCfg", JSON.stringify(analysisCfg)); } catch (e) {} }
+  function syncCfgUI() {
+    document.querySelectorAll("#cfgWindow button").forEach(function (b) { b.classList.toggle("active", parseInt(b.getAttribute("data-win"), 10) === analysisCfg.window); });
+    document.querySelectorAll("#cfgDropAt button").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-drop") === analysisCfg.dropAt); });
+    document.querySelectorAll("#cfgBasis button").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-basis") === analysisCfg.basis); });
+  }
+  document.querySelectorAll("#cfgWindow button").forEach(function (b) { b.addEventListener("click", function () { analysisCfg.window = parseInt(b.getAttribute("data-win"), 10); saveACfg(); syncCfgUI(); renderAnalysis(); }); });
+  document.querySelectorAll("#cfgDropAt button").forEach(function (b) { b.addEventListener("click", function () { analysisCfg.dropAt = b.getAttribute("data-drop"); saveACfg(); syncCfgUI(); renderAnalysis(); }); });
+  document.querySelectorAll("#cfgBasis button").forEach(function (b) { b.addEventListener("click", function () { analysisCfg.basis = b.getAttribute("data-basis"); saveACfg(); syncCfgUI(); renderAnalysis(); }); });
+
+  // ================= STRATEGY (backtest) — DEMO data =================
+  var STRAT_SPECS = [
+    { name: "Utdelare A", seed: 11, p0: 120, drift: 0.07, vol: 0.20, yield: 0.045, exMonth: 3, dropF: 0.9 },
+    { name: "Utdelare B", seed: 23, p0: 90, drift: 0.05, vol: 0.18, yield: 0.055, exMonth: 4, dropF: 1.0 },
+    { name: "Utdelare C", seed: 37, p0: 210, drift: 0.09, vol: 0.24, yield: 0.030, exMonth: 4, dropF: 0.8 },
+    { name: "Utdelare D", seed: 41, p0: 65, drift: 0.03, vol: 0.16, yield: 0.060, exMonth: 5, dropF: 1.1 },
+    { name: "Utdelare E", seed: 57, p0: 150, drift: 0.06, vol: 0.22, yield: 0.040, exMonth: 2, dropF: 0.95 },
+    { name: "Utdelare F", seed: 73, p0: 100, drift: 0.08, vol: 0.26, yield: 0.035, exMonth: 5, dropF: 0.85 }
+  ];
+  var STRAT_INDEX_SPEC = { name: "OMX", seed: 99, p0: 1600, drift: 0.035, vol: 0.13, yield: 0, exMonth: 0, dropF: 0 };
+  var STRAT_DAYS = 2016;
+
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function gauss(rnd) { var u = 0, v = 0; while (u === 0) u = rnd(); while (v === 0) v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+  function genDates(n) {
+    var out = [], d = new Date(Date.UTC(2016, 0, 4));
+    while (out.length < n) {
+      var wd = d.getUTCDay();
+      if (wd !== 0 && wd !== 6) out.push(d.getUTCFullYear() + "-" + pad2(d.getUTCMonth() + 1) + "-" + pad2(d.getUTCDate()));
+      d.setUTCDate(d.getUTCDate() + 1);
+    }
+    return out;
+  }
+  function genSeries(spec, dates) {
+    var rnd = mulberry32(spec.seed), price = spec.p0;
+    var closes = [], dividends = [], divByDate = {}, dateIndex = {}, doneYears = {};
+    var dailyDrift = spec.drift / 252, dailyVol = spec.vol / Math.sqrt(252);
+    for (var i = 0; i < dates.length; i++) {
+      dateIndex[dates[i]] = i;
+      price *= (1 + dailyDrift + dailyVol * gauss(rnd));
+      if (spec.exMonth && !doneYears[dates[i].slice(0, 4)] && (+dates[i].slice(5, 7)) === spec.exMonth) {
+        doneYears[dates[i].slice(0, 4)] = true;
+        var amount = Math.round(price * spec.yield * 100) / 100;
+        dividends.push({ exDate: dates[i], amount: amount });
+        divByDate[dates[i]] = amount;
+        price -= amount * spec.dropF;
+      }
+      closes.push(price);
+    }
+    return { name: spec.name, closes: closes, dividends: dividends, divByDate: divByDate, dateIndex: dateIndex };
+  }
+  var _stratData = null;
+  function stratData() {
+    if (_stratData) return _stratData;
+    var dates = genDates(STRAT_DAYS);
+    _stratData = {
+      dates: dates,
+      stocks: STRAT_SPECS.map(function (s) { return genSeries(s, dates); }),
+      index: genSeries(STRAT_INDEX_SPEC, dates)
+    };
+    return _stratData;
+  }
+
+  function btBasket(stocks, dates) {
+    var w = 100 / stocks.length;
+    var shares = stocks.map(function (s) { return w / s.closes[0]; });
+    var cash = 0, eq = [];
+    for (var d = 0; d < dates.length; d++) {
+      for (var si = 0; si < stocks.length; si++) { var amt = stocks[si].divByDate[dates[d]]; if (amt) cash += shares[si] * amt; }
+      var v = cash; for (var k = 0; k < stocks.length; k++) v += shares[k] * stocks[k].closes[d]; eq.push(v);
+    }
+    return { equity: eq, trades: [] };
+  }
+  function btIndex(index, dates, annualYield) {
+    var perDay = (annualYield || 0.03) / 252, acc = 1, eq = [];
+    for (var d = 0; d < dates.length; d++) { acc *= (1 + perDay); eq.push(100 * index.closes[d] / index.closes[0] * acc); }
+    return { equity: eq, trades: [] };
+  }
+  function btRotation(stocks, dates, cfg) {
+    var events = [];
+    stocks.forEach(function (s, si) {
+      s.dividends.forEach(function (dv) {
+        var exIdx = s.dateIndex[dv.exDate];
+        if (exIdx != null) events.push({ si: si, exIdx: exIdx, entryDay: Math.max(0, exIdx - cfg.entryOffset), amount: dv.amount });
+      });
+    });
+    events.sort(function (a, b) { return a.entryDay - b.entryDay; });
+    var cash = 100, pos = null, ei = 0, eq = [], trades = [], maxHold = cfg.maxHold || 90;
+    for (var d = 0; d < dates.length; d++) {
+      if (pos) {
+        var s = stocks[pos.si];
+        var amt = s.divByDate[dates[d]];
+        if (amt && d === pos.exIdx && pos.entryDay < pos.exIdx) pos.div += pos.shares * amt;
+        var exit = false;
+        if (cfg.exitRule === "ndays") { if (d >= pos.entryDay + cfg.nDays) exit = true; }
+        else if (cfg.exitRule === "gap") { if (d > pos.exIdx && s.closes[d] >= pos.entryPrice) exit = true; if (d >= pos.entryDay + maxHold) exit = true; }
+        else if (cfg.exitRule === "next") { if (ei < events.length && d >= events[ei].entryDay) exit = true; if (d >= pos.entryDay + maxHold) exit = true; }
+        if (d === dates.length - 1) exit = true;
+        if (exit) {
+          var proceeds = (pos.shares * s.closes[d] + pos.div) * (1 - cfg.courtage);
+          trades.push({ ret: proceeds / pos.cost - 1, hold: d - pos.entryDay });
+          cash = proceeds; pos = null;
+        }
+      }
+      if (!pos) {
+        while (ei < events.length && events[ei].entryDay < d) ei++;
+        if (ei < events.length && events[ei].entryDay === d) {
+          var ev = events[ei], st = stocks[ev.si], price = st.closes[d];
+          var fee = cash * cfg.courtage, sh = (cash - fee) / price;
+          pos = { si: ev.si, shares: sh, entryPrice: price, entryDay: d, exIdx: ev.exIdx, div: 0, cost: cash };
+          cash = 0; ei++;
+        }
+      }
+      var val = cash; if (pos) val += pos.shares * stocks[pos.si].closes[d] + pos.div; eq.push(val);
+    }
+    return { equity: eq, trades: trades };
+  }
+  function statsOf(eq) {
+    var n = eq.length, first = eq[0], last = eq[n - 1], years = n / 252;
+    var rets = []; for (var i = 1; i < n; i++) rets.push(eq[i] / eq[i - 1] - 1);
+    var m = mean(rets) || 0;
+    var sd = Math.sqrt(rets.reduce(function (a, b) { return a + (b - m) * (b - m); }, 0) / rets.length);
+    var peak = eq[0], maxDD = 0;
+    for (var j = 0; j < n; j++) { if (eq[j] > peak) peak = eq[j]; var dd = (eq[j] - peak) / peak; if (dd < maxDD) maxDD = dd; }
+    return { last: last, cagr: (Math.pow(last / first, 1 / years) - 1) * 100, vol: sd * Math.sqrt(252) * 100, maxDD: maxDD * 100, sharpe: sd > 0 ? m / sd * Math.sqrt(252) : 0 };
+  }
+
+  function buildChart(series, dates) {
+    var W = 680, H = 300, padL = 34, padR = 10, padT = 12, padB = 22, n = dates.length;
+    var lo = Infinity, hi = -Infinity;
+    series.forEach(function (s) { s.eq.forEach(function (v) { if (v < lo) lo = v; if (v > hi) hi = v; }); });
+    var yp = (hi - lo) * 0.08 || 1; lo -= yp; hi += yp;
+    var step = Math.max(1, Math.floor(n / 240));
+    var x = function (i) { return padL + (i / (n - 1)) * (W - padL - padR); };
+    var y = function (v) { return padT + (1 - (v - lo) / (hi - lo)) * (H - padT - padB); };
+    var paths = series.map(function (s) {
+      var dp = "";
+      for (var i = 0; i < n; i += step) dp += (i === 0 ? "M" : "L") + x(i).toFixed(1) + " " + y(s.eq[i]).toFixed(1);
+      dp += "L" + x(n - 1).toFixed(1) + " " + y(s.eq[n - 1]).toFixed(1);
+      return '<path d="' + dp + '" fill="none" stroke="' + s.color + '" stroke-width="2" stroke-linejoin="round"/>';
+    }).join("");
+    var y100 = y(100);
+    var grid = '<line x1="' + padL + '" x2="' + (W - padR) + '" y1="' + y100.toFixed(1) + '" y2="' + y100.toFixed(1) + '" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 3"/>' +
+      '<text x="' + (padL - 4) + '" y="' + (y100 + 3).toFixed(1) + '" font-size="10" fill="var(--ink-faint)" text-anchor="end">100</text>' +
+      '<text x="' + (padL - 4) + '" y="' + (y(hi) + 8).toFixed(1) + '" font-size="10" fill="var(--ink-faint)" text-anchor="end">' + Math.round(hi) + '</text>';
+    var labels = '<text x="' + padL + '" y="' + (H - 6) + '" font-size="11" fill="var(--ink-faint)">' + dates[0].slice(0, 4) + '</text>' +
+      '<text x="' + (W - padR) + '" y="' + (H - 6) + '" font-size="11" fill="var(--ink-faint)" text-anchor="end">' + dates[n - 1].slice(0, 4) + '</text>';
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="eqchart" role="img" aria-label="Equity-kurvor">' + grid + paths + labels + '</svg>';
+  }
+
+  var strategyCfg = { entryOffset: 5, exitRule: "gap", courtage: 0.0015, nDays: 20, maxHold: 90 };
+  try {
+    var _sc = JSON.parse(localStorage.getItem("avkastning.strategyCfg"));
+    if (_sc) {
+      strategyCfg.entryOffset = _sc.entryOffset === 0 ? 0 : (_sc.entryOffset || 5);
+      strategyCfg.exitRule = ["gap", "ndays", "next"].indexOf(_sc.exitRule) >= 0 ? _sc.exitRule : "gap";
+      strategyCfg.courtage = typeof _sc.courtage === "number" ? _sc.courtage : 0.0015;
+    }
+  } catch (e) {}
+  function saveSCfg() { try { localStorage.setItem("avkastning.strategyCfg", JSON.stringify(strategyCfg)); } catch (e) {} }
+  function syncStratUI() {
+    document.querySelectorAll("#stEntry button").forEach(function (b) { b.classList.toggle("active", parseInt(b.getAttribute("data-entry"), 10) === strategyCfg.entryOffset); });
+    document.querySelectorAll("#stExit button").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-exit") === strategyCfg.exitRule); });
+    document.querySelectorAll("#stFee button").forEach(function (b) { b.classList.toggle("active", parseFloat(b.getAttribute("data-fee")) === strategyCfg.courtage); });
+  }
+  function renderStrategy() {
+    syncStratUI();
+    var d = stratData();
+    var basket = btBasket(d.stocks, d.dates);
+    var rot = btRotation(d.stocks, d.dates, strategyCfg);
+    var index = btIndex(d.index, d.dates, 0.03);
+    var series = [
+      { label: "Behåll korg", color: "var(--accent)", res: basket },
+      { label: "Rotera", color: "var(--tag-re)", res: rot },
+      { label: "OMX (index)", color: "var(--ink-faint)", res: index }
+    ];
+    document.getElementById("stChart").innerHTML = buildChart(series.map(function (s) { return { color: s.color, eq: s.res.equity }; }), d.dates);
+    document.getElementById("stLegend").innerHTML = series.map(function (s) {
+      return '<span class="lg"><span class="dot" style="background:' + s.color + '"></span>' + s.label + ' <b>' + Math.round(s.res.equity[s.res.equity.length - 1]) + '</b></span>';
+    }).join("");
+
+    var rows = series.map(function (s) { return { label: s.label, color: s.color, st: statsOf(s.res.equity), trades: s.res.trades }; });
+    var html = '<table><thead><tr>' +
+      '<th class="name">Strategi</th><th>Slutv.</th><th>Årsavk</th><th>Vol</th><th>Max ned</th><th>Sharpe</th><th>Affärer</th><th>Träff</th><th>Snitt håll</th>' +
+      '</tr></thead><tbody>';
+    rows.forEach(function (r) {
+      var t = r.trades, wins = t.filter(function (x) { return x.ret > 0; }).length;
+      var winRate = t.length ? Math.round(wins / t.length * 100) + " %" : "–";
+      var avgHold = t.length ? Math.round(mean(t.map(function (x) { return x.hold; }))) + " d" : "–";
+      html += '<tr>' +
+        '<td class="name"><span class="swatch" style="background:' + r.color + '"></span>' + r.label + '</td>' +
+        '<td>' + Math.round(r.st.last) + '</td>' +
+        '<td class="' + (r.st.cagr >= 0 ? "up" : "down") + '">' + (r.st.cagr >= 0 ? "+" : "−") + Math.abs(r.st.cagr).toFixed(1) + ' %</td>' +
+        '<td>' + r.st.vol.toFixed(1) + ' %</td>' +
+        '<td class="down">' + r.st.maxDD.toFixed(1) + ' %</td>' +
+        '<td>' + r.st.sharpe.toFixed(2) + '</td>' +
+        '<td>' + (t.length || "–") + '</td>' +
+        '<td>' + winRate + '</td>' +
+        '<td>' + avgHold + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById("stStats").innerHTML = html;
+  }
+  document.querySelectorAll("#stEntry button").forEach(function (b) { b.addEventListener("click", function () { strategyCfg.entryOffset = parseInt(b.getAttribute("data-entry"), 10); saveSCfg(); renderStrategy(); }); });
+  document.querySelectorAll("#stExit button").forEach(function (b) { b.addEventListener("click", function () { strategyCfg.exitRule = b.getAttribute("data-exit"); saveSCfg(); renderStrategy(); }); });
+  document.querySelectorAll("#stFee button").forEach(function (b) { b.addEventListener("click", function () { strategyCfg.courtage = parseFloat(b.getAttribute("data-fee")); saveSCfg(); renderStrategy(); }); });
+
+  // ================= MODE =================
+  var portfolioView = document.getElementById("portfolioView");
+  var compareView = document.getElementById("compareView");
+  var analysisView = document.getElementById("analysisView");
+  var strategyView = document.getElementById("strategyView");
+  var modeP = document.getElementById("modePortfolio");
+  var modeC = document.getElementById("modeCompare");
+  var modeA = document.getElementById("modeAnalysis");
+  var modeS = document.getElementById("modeStrategy");
+  function applyMode() {
+    portfolioView.hidden = mode !== "portfolio";
+    compareView.hidden = mode !== "compare";
+    analysisView.hidden = mode !== "analysis";
+    strategyView.hidden = mode !== "strategy";
+    modeP.classList.toggle("active", mode === "portfolio");
+    modeC.classList.toggle("active", mode === "compare");
+    modeA.classList.toggle("active", mode === "analysis");
+    modeS.classList.toggle("active", mode === "strategy");
+    if (mode === "portfolio") renderPortfolio();
+    else if (mode === "compare") renderCompare();
+    else if (mode === "analysis") renderAnalysis();
+    else renderStrategy();
+  }
+  function setMode(m) { mode = m; try { localStorage.setItem(MODE_KEY, m); } catch (e) {} applyMode(); }
+  modeP.addEventListener("click", function () { setMode("portfolio"); });
+  modeC.addEventListener("click", function () { setMode("compare"); });
+  modeA.addEventListener("click", function () { setMode("analysis"); });
+  modeS.addEventListener("click", function () { setMode("strategy"); });
+
+  // ================= THEME =================
+  var root = document.documentElement;
+  var sunPath = "M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4";
+  var moonPath = "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z";
+  function applyTheme(t) {
+    var icon = document.getElementById("themeIcon");
+    if (t === "dark" || t === "light") root.setAttribute("data-theme", t);
+    var isDark = t === "dark" || (t !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    icon.innerHTML = isDark ? '<circle cx="12" cy="12" r="4.2"/><path d="' + sunPath + '"/>' : '<path d="' + moonPath + '"/>';
+  }
+  var storedTheme = null; try { storedTheme = localStorage.getItem(THEME_KEY); } catch (e) {}
+  applyTheme(storedTheme);
+  document.getElementById("themeToggle").addEventListener("click", function () {
+    var isDark = root.getAttribute("data-theme") === "dark" || (!root.getAttribute("data-theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    var next = isDark ? "light" : "dark"; try { localStorage.setItem(THEME_KEY, next); } catch (e) {} applyTheme(next);
+  });
+
+  // ================= INIT =================
+  document.getElementById("p_buyDate").value = todayISO();
+  load();
+  syncCfgUI();
+  applyMode();
+})();
+</script>
+</body>
+</html>

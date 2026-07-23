@@ -1,0 +1,14 @@
+{
+  "name": "utdelningsanalys",
+  "version": "0.1.0",
+  "description": "Utdelnings-gap-analys för svenska aktier: hittar aktier vars kurs faller minst lika mycket som utdelningen på x-dagen och mäter hur snabbt gapet fylls.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test",
+    "analyze": "node src/cli.js"
+  },
+  "license": "MIT"
+}
