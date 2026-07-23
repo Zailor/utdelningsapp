@@ -62,6 +62,12 @@ export function analyzeEvents(bars, dividends, indexBars, cfg = {}) {
       }
     }
 
+    // Outcome of "buy at pBefore, collect the dividend, sell when the gap
+    // fills — or at the scan end if it never does": exit close + dividend vs
+    // entry. Excludes courtage; the Strategy tab does the full backtest.
+    const exitClose = bars[recovery !== null ? exIndex + recovery : last].close;
+    const gainPct = (div.amount + exitClose - pBefore) / pBefore;
+
     events.push({
       exDate: div.exDate,
       amount: div.amount,
@@ -75,6 +81,8 @@ export function analyzeEvents(bars, dividends, indexBars, cfg = {}) {
       fell: drop >= div.amount,
       recovery,
       recovered: recovery !== null,
+      exitClose,
+      gainPct,
     });
   }
 
@@ -104,6 +112,7 @@ function summarize(events, window) {
     maxRec: recDays.length ? Math.max(...recDays) : null,
     recentFill: recent.length ? (recent.filter((e) => e.recovered).length / recent.length) * 100 : null,
     years: years.length ? [Math.min(...years), maxYear] : null,
+    avgGainPct: mean(events.map((e) => e.gainPct).filter((x) => x != null)),
   };
 }
 

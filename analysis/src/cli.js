@@ -7,23 +7,25 @@
 //   node src/cli.js --list mylist.txt --minYield 3   # only stocks yielding >= 3%
 //   node src/cli.js --minEvents 4 --years 10         # need >= 4 ex-days to be ranked
 //   node src/cli.js --symbol INVE-B.ST
+//   node src/cli.js --json [fil]                     # also write results as JSON (default data/analysis.json)
+//   node src/cli.js --refresh                        # ignore data/history/ cache, refetch everything
 //
 // Universe resolution order: --symbol > --list <file> > data/universe.json[name] > built-in name.
+// Raw data is cached per stock in data/history/ (see history.js); only the tail
+// is fetched on re-runs.
 
-import { readFileSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
-import { fetchChart } from "./yahoo.js";
+import { writeFileSync } from "node:fs";
+import { fetchChartCached } from "./history.js";
 import { analyzeEvents } from "./gapfill.js";
 import { trailingDividendYield } from "./metrics.js";
-import { builtinUniverse, INDEX } from "./stocks.js";
-
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+import { INDEX } from "./stocks.js";
+import { resolveUniverse } from "./universe.js";
 
 function parseArgs(argv) {
   const a = {
     window: 40, dropAt: "open", basis: "nominal", years: 8,
     universe: "large-cap", list: null, minYield: 0, minEvents: 1, symbol: null,
+    delay: 300, refresh: false, json: null, maxAge: 0,
   };
   for (let i = 2; i < argv.length; i++) {
     const k = argv[i], v = argv[i + 1];
@@ -37,6 +39,12 @@ function parseArgs(argv) {
     else if (k === "--minYield") a.minYield = num(v);
     else if (k === "--minEvents") a.minEvents = num(v);
     else if (k === "--symbol") { a.symbol = v; i++; }
+    else if (k === "--delay") a.delay = num(v);
+    else if (k === "--refresh") a.refresh = true;
+    else if (k === "--maxAge") a.maxAge = num(v);
+    else if (k === "--json") {
+      a.json = v && !v.startsWith("--") ? (i++, v) : "data/analysis.json";
+    }
   }
   return a;
 }
@@ -47,31 +55,7 @@ function fromDate(years) {
   return d.toISOString().slice(0, 10);
 }
 
-// Read a plain-text ticker list: one per line, "SYMBOL Optional Name",
-// blank lines and lines starting with # ignored.
-function readListFile(path) {
-  return readFileSync(path, "utf8")
-    .split("\n")
-    .map((l) => l.trim())
-    .filter((l) => l && !l.startsWith("#"))
-    .map((l) => {
-      const [symbol, ...rest] = l.split(/\s+/);
-      return { symbol, name: rest.join(" ") || symbol };
-    });
-}
-
-function resolveUniverse(cfg) {
-  if (cfg.symbol) return [{ symbol: cfg.symbol, name: cfg.symbol }];
-  if (cfg.list) return readListFile(cfg.list);
-  const dataFile = join(ROOT, "data", "universe.json");
-  if (existsSync(dataFile)) {
-    const data = JSON.parse(readFileSync(dataFile, "utf8"));
-    if (Array.isArray(data[cfg.universe]) && data[cfg.universe].length) return data[cfg.universe];
-  }
-  const built = builtinUniverse(cfg.universe);
-  if (!built) throw new Error(`Okänt universum: "${cfg.universe}" (bygg in eller använd --list / data/universe.json)`);
-  return built;
-}
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function run() {
   const cfg = parseArgs(process.argv);
@@ -89,7 +73,7 @@ async function run() {
   let indexBars = null;
   if (cfg.basis === "index") {
     try {
-      indexBars = (await fetchChart(INDEX.symbol, { from })).bars;
+      indexBars = (await fetchChartCached(INDEX.symbol, { from, refresh: cfg.refresh, maxAgeH: cfg.maxAge })).bars;
     } catch (e) {
       console.warn(`Kunde inte hämta index (${INDEX.symbol}): ${e.message}. Faller tillbaka på nominellt.`);
       cfg.basis = "nominal";
@@ -98,9 +82,11 @@ async function run() {
 
   const rows = [];
   let skippedYield = 0, skippedEvents = 0, skippedNoDiv = 0;
-  for (const s of universe) {
+  for (const [i, s] of universe.entries()) {
+    if (universe.length > 1) process.stderr.write(`\r  hämtar ${i + 1}/${universe.length} ${s.symbol}${" ".repeat(16)}`);
+    if (i > 0 && cfg.delay > 0) await sleep(cfg.delay);
     try {
-      const { bars, dividends } = await fetchChart(s.symbol, { from });
+      const { bars, dividends } = await fetchChartCached(s.symbol, { from, refresh: cfg.refresh, maxAgeH: cfg.maxAge });
       if (!dividends.length) { skippedNoDiv++; continue; }
       const yld = trailingDividendYield(bars, dividends);
       if (yld.yield < cfg.minYield) { skippedYield++; continue; }
@@ -108,9 +94,10 @@ async function run() {
       if (summary.n < cfg.minEvents) { skippedEvents++; continue; }
       rows.push({ name: s.name, yield: yld.yield, ...summary });
     } catch (e) {
-      console.warn(`  ${s.name} (${s.symbol}): ${e.message}`);
+      console.warn(`\n  ${s.name} (${s.symbol}): ${e.message}`);
     }
   }
+  if (universe.length > 1) process.stderr.write(`\r${" ".repeat(48)}\r`);
 
   rows.sort((a, b) => {
     if (Math.abs(b.fillRate - a.fillRate) > 0.01) return b.fillRate - a.fillRate;
@@ -125,6 +112,22 @@ async function run() {
     skippedEvents ? `${skippedEvents} med för få x-dagar` : null,
   ].filter(Boolean).join(", ");
   if (skips) console.log(`Bortfiltrerade: ${skips}.\n`);
+
+  if (cfg.json) {
+    const out = {
+      generated: new Date().toISOString(),
+      config: {
+        window: cfg.window, dropAt: cfg.dropAt, basis: cfg.basis, years: cfg.years,
+        universe: cfg.symbol ?? cfg.list ?? cfg.universe,
+        minYield: cfg.minYield, minEvents: cfg.minEvents,
+      },
+      universeSize: universe.length,
+      skipped: { noDividend: skippedNoDiv, belowMinYield: skippedYield, tooFewEvents: skippedEvents },
+      rows,
+    };
+    writeFileSync(cfg.json, JSON.stringify(out, null, 2));
+    console.log(`Skrev ${cfg.json} (${rows.length} aktier).`);
+  }
 }
 
 function printTable(rows) {

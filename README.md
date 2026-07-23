@@ -37,10 +37,14 @@ gap-fill-analysen. Kör lokalt (kräver öppen internetuppkoppling):
 cd analysis
 npm test                                # motorns enhetstester (inget nät)
 node src/cli.js --minYield 3 --basis index
+npm run validate                        # kolla att universumets tickers finns på Yahoo
 ```
 
-Se `analysis/README.md` för alla flaggor, universum-val (`--universe` / `--list`
-/ `data/universe.json`), datakällor och metodik.
+Hela Nasdaq Stockholm Large Cap (~100 bolag) följer med i
+`analysis/data/universe.json`; egna listor läggs till som nya nycklar i samma
+fil (`--universe <namn>`) eller som textfil (`--list`). Se `analysis/README.md`
+för alla flaggor, datakällor och metodik. Genvägar: `make analyze`,
+`make validate`.
 
 ## Så hänger delarna ihop (roadmap)
 
@@ -57,8 +61,10 @@ Se `analysis/README.md` för alla flaggor, universum-val (`--universe` / `--list
 ## Status
 
 - `prototype/` – fungerar; verifierad i webbläsare (alla fyra lägen).
-- `analysis/` – motor + parser + filter verifierade (15 enhetstester, `npm test`).
-  Själva Yahoo-hämtningen körs där utgående nät är öppet.
+- `analysis/` – motor + parser + filter verifierade (enhetstester, `npm test`);
+  live-hämtning mot Yahoo verifierad med riktig data. Yahoo blockerar numera
+  skript-klienter (429) från vissa nätverk – klienten växlar då automatiskt
+  till headless Chrome som hämtare (se `analysis/README.md`, Datakälla).
 
 Exempeldatans *nivåer* är inte verkliga – *mönstren och metoden* är poängen tills
 riktig data är inkopplad.

@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "node --test",
-    "analyze": "node src/cli.js"
+    "analyze": "node src/cli.js",
+    "validate": "node src/validate.js"
   },
   "license": "MIT"
 }

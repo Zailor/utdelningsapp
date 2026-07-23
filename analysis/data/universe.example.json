@@ -1,11 +1,7 @@
 {
-  "_comment": "Kopiera till data/universe.json och fyll på med den officiella listan (t.ex. hela Stockholmsbörsen, Large/Mid/Small Cap). Namnet du väljer används med --universe <namn>. CLI:t föredrar den här filen framför de inbyggda listorna.",
-  "large-cap": [
-    { "symbol": "INVE-B.ST", "name": "Investor B" },
-    { "symbol": "VOLV-B.ST", "name": "Volvo B" }
-  ],
+  "_comment": "Formatexempel. Den riktiga filen data/universe.json finns redan (large-cap medföljer) - lägg till egna listor som nya nycklar där och kör --universe <namn>. Verifiera nya tickers med: npm run validate -- --universe <namn>",
   "mid-cap": [
-    { "symbol": "BILL.ST", "name": "BillerudKorsnäs" }
-  ],
-  "small-cap": []
+    { "symbol": "BUFAB.ST", "name": "Bufab" },
+    { "symbol": "NOBI.ST", "name": "Nobia" }
+  ]
 }

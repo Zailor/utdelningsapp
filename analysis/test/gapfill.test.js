@@ -134,3 +134,19 @@ test("parseChart turns a Yahoo payload into bars + dividends", () => {
 test("parseChart throws a clear error on an empty result", () => {
   assert.throws(() => parseChart({ chart: { result: [] } }), /ingen data/);
 });
+
+test("gainPct: recovered event exits at the recovery close, dividend included", () => {
+  const { events, summary } = analyzeEvents(recoverBars, recoverDivs, null, { window: 40, dropAt: "open", basis: "nominal" });
+  // Buy at 100, dividend 5, sell at recovery close 101 → (5 + 101 - 100) / 100
+  assert.equal(events[0].exitClose, 101);
+  assert.ok(Math.abs(events[0].gainPct - 0.06) < 1e-9);
+  assert.ok(Math.abs(summary.avgGainPct - 0.06) < 1e-9);
+});
+
+test("gainPct: unrecovered event exits at the scan end and can be negative net of the dividend", () => {
+  const { events } = analyzeEvents(failBars, failDivs, null, { window: 40, dropAt: "open", basis: "nominal" });
+  // Buy at 100, dividend 5, stuck at 98 at the end → (5 + 98 - 100) / 100
+  assert.equal(events[0].recovered, false);
+  assert.equal(events[0].exitClose, 98);
+  assert.ok(Math.abs(events[0].gainPct - 0.03) < 1e-9);
+});
