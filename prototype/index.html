@@ -108,6 +108,35 @@
   .evbars { display: flex; gap: 3px; margin-top: 12px; align-items: flex-end; height: 34px; }
   .evbar { flex: 1; border-radius: 2px 2px 0 0; min-height: 3px; background: var(--gain); opacity: .8; }
   .evbar.fail { background: var(--loss); opacity: .85; }
+  .cellbars { display: flex; gap: 2px; align-items: flex-end; height: 22px; width: 96px; margin-left: auto; }
+  .cellbars .evbar { min-width: 4px; }
+  .stat-table th.sortable { cursor: pointer; user-select: none; }
+  .stat-table th.sorted { color: var(--accent); }
+  .stat-table tbody tr.rowlink { cursor: pointer; }
+  .stat-table tbody tr.rowlink:hover td { background: var(--surface-2); }
+  .stat-table tbody tr.rowlink.open td { background: var(--surface-2); border-bottom-color: transparent; }
+  .detail-row > td { padding: 0 8px 12px; }
+  .detail-inner { background: var(--surface-2); border-radius: 10px; padding: 4px 10px 8px; overflow-x: auto; }
+  .detail-inner table { width: 100%; }
+  .detail-inner th, .detail-inner td { padding: 6px 8px; font-size: .78rem; }
+  .detail-inner tbody tr:last-child td { border-bottom: none; }
+  .legend { margin-top: 14px; font-size: .82rem; color: var(--ink-soft); }
+  .legend summary { cursor: pointer; font-weight: 700; color: var(--ink); padding: 12px 16px; font-size: .85rem; }
+  .legend dl { display: grid; grid-template-columns: auto 1fr; gap: 7px 14px; padding: 2px 16px 4px; margin: 0; }
+  .legend dt { font-weight: 700; color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .legend dd { margin: 0; line-height: 1.5; }
+  .legend-note { padding: 10px 16px 14px; margin: 0; line-height: 1.5; color: var(--ink-faint); }
+  /* Analystabellen bryter ut ur den smala mittkolumnen på breda skärmar så
+     alla kolumner syns utan horisontell scroll (scrollen finns kvar som
+     fallback på smala skärmar via .stat-table). */
+  @media (min-width: 700px) {
+    #analysis .stat-table {
+      width: min(1180px, calc(100vw - 40px));
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
   .aevent { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--surface-2); border-radius: 9px; }
   .aevent .ad { font-family: var(--mono); font-size: .72rem; color: var(--ink-faint); min-width: 72px; }
   .aevent .am { flex: 1; font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .82rem; font-weight: 600; }
@@ -390,6 +419,7 @@
         <div class="cfg-filters">
           <label>Minsta dir.avkastning <input type="number" id="cfgMinYield" min="0" max="20" step="0.5" value="0"> %</label>
           <label>Minsta fyllnadsgrad <input type="number" id="cfgMinFill" min="0" max="100" step="5" value="0"> %</label>
+          <label title="Kräv minst så många historiska utdelningstillfällen – gallrar bort aktier med för tunt statistiskt underlag">Minsta antal x-dagar <input type="number" id="cfgMinN" min="0" step="1" value="0"></label>
         </div>
       </div>
     </section>
@@ -397,10 +427,23 @@
     <div class="list-head"><h2>Svenska aktier – rankade</h2></div>
     <div id="analysis" class="stocks"></div>
 
-    <footer>
-      "Fyllde gapet" = kursen (stängning) är tillbaka på nivån dagen före x-dagen inom fönstret.<br>
-      Återhämtning mäts på ojusterat råpris. Frekvens ≠ garanti – se antal x-dagar per aktie.
-    </footer>
+    <details class="card legend" open>
+      <summary>Så läser du tabellen</summary>
+      <dl>
+        <dt>Fyllt %</dt><dd>Andel av alla x-dagar där kursen stängde tillbaka på nivån från dagen före x-dagen ("gapet fylldes") inom valt fönster. Grönt ≥ 66 %, grått 33–65 %, rött därunder.</dd>
+        <dt>Median</dt><dd>Median-antal handelsdagar tills gapet fylldes. 0 d = kursen stängde återhämtad redan på x-dagen.</dd>
+        <dt>X-dagar</dt><dd>Antal historiska utdelningstillfällen i underlaget. Få x-dagar = svag statistik – lita inte på en hög Fyllt % med bara 2–3 tillfällen.</dd>
+        <dt>Föll≥utd</dt><dd>Andel x-dagar där kursen föll minst lika mycket som utdelningen (mätt på öppning eller stängning enligt valet ovan).</dd>
+        <dt>Snitt×</dt><dd>Genomsnittligt kursfall delat med utdelningen. 1,00× = föll exakt utdelningsbeloppet, 0,50× = föll hälften, negativt = kursen steg i snitt på x-dagen.</dd>
+        <dt>3 år</dt><dd>Fyllnadsgrad enbart de senaste tre åren – visar om mönstret fortfarande håller.</dd>
+        <dt>1 000 kr/x-dag</dt><dd>Snittutfall i kronor för: köp för 1 000 kr dagen före x-dagen, ta utdelningen, sälj när gapet fyllts – eller vid fönstrets slut om det aldrig fylls (då kan siffran bli negativ). Exkl. courtage; hela strategin med courtage backtestas under Strategi.</dd>
+        <dt>Dir.avk</dt><dd>Direktavkastning: summan av utdelningar de senaste 12 månaderna delat med senaste kurs.</dd>
+        <dt>Kurs</dt><dd>Senaste stängningskurs i kronor.</dd>
+        <dt>Utd 12m</dt><dd>Utdelning i kronor per aktie de senaste 12 månaderna.</dd>
+        <dt>Graf</dt><dd>En stapel per x-dag i kronologisk ordning. Grön = gapet fylldes (högre stapel = tog fler dagar), röd = fylldes inte inom fönstret. Hovra över en stapel för datum och antal dagar.</dd>
+      </dl>
+      <p class="legend-note">Klicka på en kolumnrubrik för att sortera, och på en aktierad för att fälla ut detaljer för varje historisk x-dag. Återhämtning mäts på ojusterat råpris. Frekvens ≠ garanti – historiken säger inget säkert om nästa x-dag.</p>
+    </details>
   </div>
 
   <!-- ============ STRATEGY VIEW (backtest) ============ -->
@@ -412,6 +455,13 @@
     <p class="sub-note">Behålla en korg, eller rotera runt och fånga varje utdelning? Backtest på samma kapital och period, index-justerat och efter courtage. Beräknat för ISK.</p>
 
     <section class="card cfg-card">
+      <div class="cfg-item">
+        <span>Urval av korg</span>
+        <div class="cfg-seg" id="stSelection">
+          <button data-sel="insample" class="active" title="Korgen väljs med Analys-filtren på hela periodens statistik – överskattar resultatet eftersom urvalet ser facit">Dagens filter (facit)</button>
+          <button data-sel="walkforward" title="Korgen screenas om första handelsdagen varje år med Analys-filtren – på enbart data som fanns då. Ärligt out-of-sample-test.">Årlig omscreening (out-of-sample)</button>
+        </div>
+      </div>
       <div class="cfg-item">
         <span>Köp (rotation)</span>
         <div class="cfg-seg" id="stEntry">
@@ -912,10 +962,10 @@
     ]]
   ];
   var YEAR_DRIFT = { "2018": 0.0006, "2019": 0.0012, "2020": 0.0004, "2021": 0.0015, "2022": -0.0008, "2023": 0.0010, "2024": 0.0011 };
-  var analysisCfg = { window: 40, dropAt: "open", basis: "nominal", minYield: 0, minFill: 0 };
+  var analysisCfg = { window: 40, dropAt: "open", basis: "nominal", minYield: 0, minFill: 0, minN: 0 };
   try {
     var _ac = JSON.parse(localStorage.getItem("avkastning.analysisCfg"));
-    if (_ac && _ac.window) analysisCfg = { window: _ac.window, dropAt: _ac.dropAt === "close" ? "close" : "open", basis: _ac.basis === "index" ? "index" : "nominal", minYield: +_ac.minYield || 0, minFill: +_ac.minFill || 0 };
+    if (_ac && _ac.window) analysisCfg = { window: _ac.window, dropAt: _ac.dropAt === "close" ? "close" : "open", basis: _ac.basis === "index" ? "index" : "nominal", minYield: +_ac.minYield || 0, minFill: +_ac.minFill || 0, minN: +_ac.minN || 0 };
   } catch (e) {}
   var expandedA = {};
 
@@ -989,7 +1039,10 @@
         lastPrice: r.lastPrice != null ? r.lastPrice : null,
         ttmDiv: r.ttmDiv != null ? r.ttmDiv : null,
         years: c.years ? [String(c.years[0]), String(c.years[1])] : ["–", "–"],
-        events: c.events.map(function (e) { return { date: e.date, recovery: e.rec, recovered: e.rec != null }; })
+        events: c.events.map(function (e) {
+          return { date: e.date, recovery: e.rec, recovered: e.rec != null,
+                   amount: e.amount, pre: e.pre, drop: e.drop, exit: e.exit, gain: e.gain };
+        })
       };
     }).filter(Boolean);
   }
@@ -998,6 +1051,7 @@
   function passesFilters(st) {
     if (analysisCfg.minFill > 0 && st.fillRate < analysisCfg.minFill) return false;
     if (analysisCfg.minYield > 0 && st.yield != null && st.yield < analysisCfg.minYield) return false;
+    if (analysisCfg.minN > 0 && st.n < analysisCfg.minN) return false;
     return true;
   }
   function filteredSymbolSet() {
@@ -1015,66 +1069,137 @@
       analysisEl.innerHTML = '<p class="sub-note">Inga aktier klarar filtren – sänk minsta direktavkastning eller fyllnadsgrad.</p>';
       return;
     }
+    sortAnalysisStats(stats);
+    analysisEl.appendChild(buildAnalysisTable(stats));
+  }
+  // Sorterbar jämförelsetabell i stället för kort. Kolumnen "Graf" är
+  // event-staplarna (en stapel per x-dag) som inline-cell.
+  var analysisSort = { key: "fillRate", dir: -1 };
+  var ACOLS = [
+    { key: "name", label: "Aktie", cls: "name", title: "Hovra över namnet för att se vilka år statistiken täcker" },
+    { key: "fillRate", label: "Fyllt %", title: "Andel x-dagar där gapet fylldes inom valt fönster" },
+    { key: "medianRec", label: "Median", title: "Median-antal handelsdagar tills gapet fylldes (0 = samma dag)" },
+    { key: "n", label: "X-dagar", title: "Antal utdelningstillfällen i underlaget – få = svag statistik" },
+    { key: "fellRate", label: "Föll≥utd", title: "Andel x-dagar där kursen föll minst lika mycket som utdelningen" },
+    { key: "avgRatio", label: "Snitt×", title: "Snittfall delat med utdelningen: 1,00× = föll hela beloppet, negativt = steg" },
+    { key: "recentFill", label: "3 år", title: "Fyllnadsgrad enbart de senaste tre åren" },
+    { key: "gain1000", label: "1 000 kr/x-dag", title: "Snittutfall per x-dag: köp dagen före för 1 000 kr, ta utdelningen, sälj när gapet fyllts eller vid fönstrets slut. Exkl. courtage." },
+    { key: "yield", label: "Dir.avk", title: "Utdelningar senaste 12 mån delat med senaste kurs" },
+    { key: "lastPrice", label: "Kurs", title: "Senaste stängningskurs (kr)" },
+    { key: "ttmDiv", label: "Utd 12m", title: "Utdelning i kr per aktie senaste 12 månaderna" },
+    { key: null, label: "Graf", title: "En stapel per x-dag: grön = fylldes (höjd = dagar), röd = fylldes inte" }
+  ];
+  function sortAnalysisStats(stats) {
+    var key = analysisSort.key, dir = analysisSort.dir;
     stats.sort(function (a, b) {
+      if (key === "name") return dir * String(a.name).localeCompare(String(b.name), "sv");
+      var ka = a[key], kb = b[key];
+      if (ka == null && kb == null) return 0;
+      if (ka == null) return 1;            // saknade värden alltid sist
+      if (kb == null) return -1;
+      if (ka !== kb) return dir * (ka - kb);
       if (Math.abs(b.fillRate - a.fillRate) > 0.01) return b.fillRate - a.fillRate;
-      var am = a.medianRec === null ? 1e9 : a.medianRec, bm = b.medianRec === null ? 1e9 : b.medianRec;
-      if (am !== bm) return am - bm;
-      return b.fellRate - a.fellRate;
+      var am = a.medianRec == null ? 1e9 : a.medianRec, bm = b.medianRec == null ? 1e9 : b.medianRec;
+      return am - bm;
     });
-    stats.forEach(function (st) { analysisEl.appendChild(buildAnalysisCard(st)); });
   }
-  // Kronor-raden finns bara i riktig data (export.js); demot hoppar över den.
-  // gain1000 = snittutfall per x-dag för "köp dagen före, ta utdelningen, sälj
-  // när gapet fyllts (eller vid fönstrets slut)" på 1 000 kr, exkl. courtage.
-  function moneyRow(st) {
-    if (st.gain1000 == null && st.lastPrice == null) return "";
-    var g = st.gain1000;
-    var gTxt = g == null ? "–" : (g >= 0 ? "+" : "") + nf2.format(g) + " kr";
-    var tot = g == null ? null : g * st.n;
-    var totTxt = tot == null ? "" : " (" + (tot >= 0 ? "+" : "") + nf2.format(tot) + " kr på " + st.n + " x-dagar)";
-    return '<div class="astat">' +
-      '<span title="Köp dagen före x-dagen, ta utdelningen, sälj när gapet fyllts eller vid fönstrets slut. Exkl. courtage.">1 000 kr per x-dag <b>' + gTxt + '</b>' + totTxt + '</span>' +
-      '<span>Senaste kurs <b>' + (st.lastPrice == null ? "–" : nf2.format(st.lastPrice) + " kr") + '</b></span>' +
-      '<span>Utdelning 12 mån <b>' + (st.ttmDiv == null ? "–" : nf2.format(st.ttmDiv) + " kr") + '</b></span>' +
-      '</div>';
-  }
-  function buildAnalysisCard(st) {
-    var card = document.createElement("div"); card.className = "card stock";
-    var fill = Math.round(st.fillRate);
-    var pctCls = st.fillRate >= 66 ? "up" : (st.fillRate >= 33 ? "flat" : "down");
-    var bars = st.events.map(function (r) {
-      if (r.recovered) return '<div class="evbar" style="height:' + Math.max(8, r.recovery / analysisCfg.window * 100) + '%" title="' + r.date + ": " + r.recovery + ' dagar"></div>';
+  function cellBars(st) {
+    return '<div class="cellbars">' + st.events.map(function (r) {
+      if (r.recovered) return '<div class="evbar" style="height:' + Math.max(12, r.recovery / analysisCfg.window * 100) + '%" title="' + r.date + ": " + r.recovery + ' dagar"></div>';
       return '<div class="evbar fail" style="height:100%" title="' + r.date + ': ej inom fönstret"></div>';
+    }).join("") + '</div>';
+  }
+  function signedKr(v, suffix) {
+    if (v == null) return "–";
+    var txt = (v >= 0 ? "+" : "−") + nf2.format(Math.abs(v)) + suffix;
+    return '<span class="' + (v >= 0 ? "up" : "down") + '">' + txt + '</span>';
+  }
+  // Detaljvyn per aktie: en rad per historisk x-dag med vad som faktiskt hände.
+  function buildDetailHtml(st) {
+    var rows = st.events.map(function (e) {
+      var ratio = e.amount ? e.drop / e.amount : null;
+      var fell = e.amount != null && e.drop != null && e.drop >= e.amount - 1e-9;
+      return '<tr>' +
+        '<td class="name">' + e.date + '</td>' +
+        '<td>' + (e.amount == null ? "–" : nf2.format(e.amount)) + '</td>' +
+        '<td>' + (e.pre == null ? "–" : nf2.format(e.pre)) + '</td>' +
+        '<td><span class="' + (fell ? "down" : "") + '">' +
+          (e.drop == null ? "–" : nf2.format(e.drop) + (ratio == null ? "" : " (" + nf2.format(ratio) + "×)")) + '</span></td>' +
+        '<td>' + (e.recovered ? e.recovery + " d" : '<span class="down">ej inom fönstret</span>') + '</td>' +
+        '<td>' + (e.exit == null ? "–" : nf2.format(e.exit)) + '</td>' +
+        '<td>' + signedKr(e.gain, " kr") + '</td>' +
+        '</tr>';
     }).join("");
-    var medTxt = st.medianRec === null ? "–" : nfSh.format(st.medianRec) + " dagar";
-    card.innerHTML =
-      '<div class="stock-top"><div><div class="stock-name">' + esc(st.name) + '</div>' +
-        '<div class="stock-meta">' + st.years[0] + '–' + st.years[1] + '  ·  ' + st.n + ' x-dagar</div></div></div>' +
-      '<div class="headline"><span class="pct ' + pctCls + '">' + fill + ' %</span>' +
-        '<span class="lbl">Fyllde gapet<br>inom ' + analysisCfg.window + ' dagar</span></div>' +
-      '<div class="bar-track"><div class="bar-fill ' + (pctCls === "down" ? "down" : "up") + '" style="width:' + fill + '%"></div></div>' +
-      '<div class="astat">' +
-        '<span>Median återhämtning <b>' + medTxt + '</b></span>' +
-        '<span>Föll ≥ utdelning <b>' + Math.round(st.fellRate) + ' %</b></span>' +
-        '<span>Antal x-dagar <b>' + st.n + '</b></span>' +
-      '</div>' +
-      '<div class="astat">' +
-        '<span>Snitt fall ÷ utd <b>' + (st.avgRatio == null ? "–" : nf2.format(st.avgRatio) + "×") + '</b></span>' +
-        '<span>Längsta återhämtning <b>' + (st.maxRec === null ? "–" : st.maxRec + " dagar") + '</b></span>' +
-        '<span>Senaste 3 åren <b>' + (st.recentFill === null ? "–" : Math.round(st.recentFill) + " %") + '</b></span>' +
-      '</div>' +
-      moneyRow(st) +
-      '<div class="evbars">' + bars + '</div>';
-    return card;
+    return '<div class="detail-inner"><table><thead><tr>' +
+      '<th class="name">X-dag</th><th title="Utdelning per aktie (kr)">Utdelning</th>' +
+      '<th title="Stängningskurs dagen före x-dagen">Kurs före</th>' +
+      '<th title="Kursfall på x-dagen i kr, och som andel av utdelningen. Rött = föll minst hela utdelningen">Fall (× utd)</th>' +
+      '<th title="Handelsdagar tills stängningen var tillbaka på kursen före">Fyllt efter</th>' +
+      '<th title="Kursen då gapet fylldes, eller vid fönstrets slut">Exitkurs</th>' +
+      '<th title="Utfall för 1 000 kr: köp dagen före, ta utdelningen, sälj vid fyllt gap eller fönstrets slut">På 1 000 kr</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+  }
+  function buildAnalysisTable(stats) {
+    var wrap = document.createElement("div");
+    wrap.className = "card stat-table";
+    var signed = signedKr;
+    var html = '<table><thead><tr>' + ACOLS.map(function (c) {
+      var sorted = c.key === analysisSort.key;
+      return '<th class="' + (c.cls || "") + (c.key ? " sortable" : "") + (sorted ? " sorted" : "") + '"' +
+        (c.key ? ' data-key="' + c.key + '"' : "") + (c.title ? ' title="' + c.title + '"' : "") + '>' +
+        c.label + (sorted ? (analysisSort.dir < 0 ? " ▼" : " ▲") : "") + '</th>';
+    }).join("") + '</tr></thead><tbody>';
+    stats.forEach(function (st, i) {
+      var fillCls = st.fillRate >= 66 ? "up" : (st.fillRate >= 33 ? "flat" : "down");
+      var hasDetail = st.events.length && st.events[0].amount != null;
+      html += '<tr' + (hasDetail ? ' class="rowlink" data-i="' + i + '" title="Klicka för detaljer per x-dag"' : '') + '>' +
+        '<td class="name" title="' + st.years[0] + '–' + st.years[1] + '">' + esc(st.name) + '</td>' +
+        '<td><span class="' + fillCls + '">' + Math.round(st.fillRate) + ' %</span></td>' +
+        '<td>' + (st.medianRec == null ? "–" : nfSh.format(st.medianRec) + " d") + '</td>' +
+        '<td>' + st.n + '</td>' +
+        '<td>' + Math.round(st.fellRate) + ' %</td>' +
+        '<td>' + (st.avgRatio == null ? "–" : nf2.format(st.avgRatio) + "×") + '</td>' +
+        '<td>' + (st.recentFill == null ? "–" : Math.round(st.recentFill) + " %") + '</td>' +
+        '<td>' + signed(st.gain1000, " kr") + '</td>' +
+        '<td>' + (st.yield == null ? "–" : nfSh.format(st.yield) + " %") + '</td>' +
+        '<td>' + (st.lastPrice == null ? "–" : nf2.format(st.lastPrice)) + '</td>' +
+        '<td>' + (st.ttmDiv == null ? "–" : nf2.format(st.ttmDiv)) + '</td>' +
+        '<td>' + cellBars(st) + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+    wrap.querySelectorAll("th.sortable").forEach(function (th) {
+      th.addEventListener("click", function () {
+        var key = th.getAttribute("data-key");
+        if (analysisSort.key === key) analysisSort.dir = -analysisSort.dir;
+        else analysisSort = { key: key, dir: key === "name" ? 1 : -1 };
+        renderAnalysis();
+      });
+    });
+    wrap.querySelectorAll("tbody tr.rowlink").forEach(function (tr) {
+      tr.addEventListener("click", function () {
+        var next = tr.nextElementSibling;
+        if (next && next.classList.contains("detail-row")) { next.remove(); tr.classList.remove("open"); return; }
+        var st = stats[+tr.getAttribute("data-i")];
+        var dtr = document.createElement("tr");
+        dtr.className = "detail-row";
+        dtr.innerHTML = '<td colspan="' + ACOLS.length + '">' + buildDetailHtml(st) + '</td>';
+        tr.parentNode.insertBefore(dtr, tr.nextSibling);
+        tr.classList.add("open");
+      });
+    });
+    return wrap;
   }
   function saveACfg() { try { localStorage.setItem("avkastning.analysisCfg", JSON.stringify(analysisCfg)); } catch (e) {} }
   function syncCfgUI() {
     document.querySelectorAll("#cfgWindow button").forEach(function (b) { b.classList.toggle("active", parseInt(b.getAttribute("data-win"), 10) === analysisCfg.window); });
     document.querySelectorAll("#cfgDropAt button").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-drop") === analysisCfg.dropAt); });
     document.querySelectorAll("#cfgBasis button").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-basis") === analysisCfg.basis); });
-    var my = document.getElementById("cfgMinYield"), mf = document.getElementById("cfgMinFill");
+    var my = document.getElementById("cfgMinYield"), mf = document.getElementById("cfgMinFill"), mn = document.getElementById("cfgMinN");
     if (my && document.activeElement !== my) my.value = analysisCfg.minYield;
     if (mf && document.activeElement !== mf) mf.value = analysisCfg.minFill;
+    if (mn && document.activeElement !== mn) mn.value = analysisCfg.minN;
   }
   // Alla ändringar i Analys-konfigen påverkar även Strategi-korgen → släng
   // den cachade strategidatan så den byggs om nästa gång fliken renderas.
@@ -1085,6 +1210,8 @@
   var _mY = document.getElementById("cfgMinYield"), _mF = document.getElementById("cfgMinFill");
   if (_mY) _mY.addEventListener("input", function () { analysisCfg.minYield = Math.max(0, +_mY.value || 0); analysisCfgChanged(); });
   if (_mF) _mF.addEventListener("input", function () { analysisCfg.minFill = Math.max(0, Math.min(100, +_mF.value || 0)); analysisCfgChanged(); });
+  var _mN = document.getElementById("cfgMinN");
+  if (_mN) _mN.addEventListener("input", function () { analysisCfg.minN = Math.max(0, Math.round(+_mN.value || 0)); analysisCfgChanged(); });
 
   // ================= STRATEGY (backtest) — DEMO data =================
   var STRAT_SPECS = [
@@ -1258,13 +1385,14 @@
     return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="eqchart" role="img" aria-label="Equity-kurvor">' + grid + paths + labels + '</svg>';
   }
 
-  var strategyCfg = { entryOffset: 5, exitRule: "gap", courtage: 0.0015, nDays: 20, maxHold: 90 };
+  var strategyCfg = { entryOffset: 5, exitRule: "gap", courtage: 0.0015, nDays: 20, maxHold: 90, selection: "insample" };
   try {
     var _sc = JSON.parse(localStorage.getItem("avkastning.strategyCfg"));
     if (_sc) {
       strategyCfg.entryOffset = _sc.entryOffset === 0 ? 0 : (_sc.entryOffset || 5);
       strategyCfg.exitRule = ["gap", "ndays", "next"].indexOf(_sc.exitRule) >= 0 ? _sc.exitRule : "gap";
       strategyCfg.courtage = typeof _sc.courtage === "number" ? _sc.courtage : 0.0015;
+      strategyCfg.selection = _sc.selection === "walkforward" ? "walkforward" : "insample";
     }
   } catch (e) {}
   function saveSCfg() { try { localStorage.setItem("avkastning.strategyCfg", JSON.stringify(strategyCfg)); } catch (e) {} }
@@ -1272,9 +1400,133 @@
     document.querySelectorAll("#stEntry button").forEach(function (b) { b.classList.toggle("active", parseInt(b.getAttribute("data-entry"), 10) === strategyCfg.entryOffset); });
     document.querySelectorAll("#stExit button").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-exit") === strategyCfg.exitRule); });
     document.querySelectorAll("#stFee button").forEach(function (b) { b.classList.toggle("active", parseFloat(b.getAttribute("data-fee")) === strategyCfg.courtage); });
+    document.querySelectorAll("#stSelection button").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-sel") === strategyCfg.selection); });
+  }
+  // ---------- Out-of-sample: årlig omscreening ----------
+  // Samma screening som Analys-filtren (fyllnadsgrad, dir.avk, antal x-dagar)
+  // men beräknad på ENBART data före varje årsskifte. Fyllnadsgraden beror
+  // bara på stängningskurser + utdelningar, så motorns logik kan återskapas
+  // exakt ur series.json (fall@öppning/stängning påverkar inte fyllnad).
+  function wfDivMap(s) {
+    if (!s._divMap) { s._divMap = {}; s.dividends.forEach(function (dv) { s._divMap[dv.exDate] = dv.amount; }); }
+    return s._divMap;
+  }
+  function wfStats(s, dates, dateIndex, idxCloses, endIdx) {
+    var window = analysisCfg.window, useIndex = analysisCfg.basis === "index";
+    var evs = [];
+    s.dividends.forEach(function (dv) {
+      var i = dateIndex[dv.exDate];
+      if (i != null && i > 0 && i < endIdx && s.closes[i - 1] != null && s.closes[i - 1] > 0) evs.push(i);
+    });
+    var n = evs.length, rec = 0;
+    for (var k = 0; k < n; k++) {
+      var exI = evs[k], pre = s.closes[exI - 1];
+      var last = Math.min(exI + window, (k + 1 < n ? evs[k + 1] - 1 : Infinity), endIdx - 1);
+      for (var j = exI; j <= last; j++) {
+        var th = pre;
+        if (useIndex && idxCloses[exI - 1]) th = pre * (idxCloses[j] / idxCloses[exI - 1]);
+        if (s.closes[j] != null && s.closes[j] >= th - 1e-9) { rec++; break; }
+      }
+    }
+    var cutoff = new Date(new Date(dates[endIdx - 1]).getTime() - 365 * 864e5).toISOString().slice(0, 10);
+    var ttm = 0;
+    s.dividends.forEach(function (dv) {
+      var i = dateIndex[dv.exDate];
+      if (i != null && i < endIdx && dv.exDate >= cutoff) ttm += dv.amount;
+    });
+    var px = s.closes[endIdx - 1];
+    return { n: n, fillRate: n ? rec / n * 100 : 0, yield: px ? ttm / px * 100 : 0 };
+  }
+  function wfScreen(d, dateIndex, endIdx) {
+    return d.stocks.filter(function (s) {
+      if (s.closes[endIdx - 1] == null) return false; // ej noterad än
+      var st = wfStats(s, d.dates, dateIndex, d.index.closes, endIdx);
+      if (st.n < Math.max(1, analysisCfg.minN)) return false;
+      if (analysisCfg.minFill > 0 && st.fillRate < analysisCfg.minFill) return false;
+      if (analysisCfg.minYield > 0 && st.yield < analysisCfg.minYield) return false;
+      return true;
+    });
+  }
+  function btWalkForward(d) {
+    var dateIndex = {};
+    d.dates.forEach(function (dt, i) { dateIndex[dt] = i; });
+    var rebs = [];
+    for (var i = 1; i < d.dates.length; i++)
+      if (d.dates[i].slice(0, 4) !== d.dates[i - 1].slice(0, 4)) rebs.push(i);
+    var screens = rebs.map(function (ri) { return { i: ri, basket: wfScreen(d, dateIndex, ri) }; });
+    var startK = 0;
+    while (startK < screens.length && !screens[startK].basket.length) startK++;
+    if (startK >= screens.length) return null;
+    var fee = strategyCfg.courtage;
+    var eq = [], equity = 100, baskets = [], current = null;
+    for (var k = startK; k < screens.length; k++) {
+      var from = screens[k].i;
+      var to = k + 1 < screens.length ? screens[k + 1].i : d.dates.length;
+      if (screens[k].basket.length) current = screens[k].basket; // tom screening → behåll förra korgen
+      baskets.push({ year: d.dates[from].slice(0, 4), names: current.map(function (s) { return s.name; }) });
+      equity *= k === startK ? 1 - fee : 1 - 2 * fee; // konservativt: courtage på hela portföljen vid varje byte
+      var w = equity / current.length;
+      var shares = current.map(function (s) { return w / s.closes[from]; });
+      var cash = 0;
+      for (var di = from; di < to; di++) {
+        for (var si = 0; si < current.length; si++) {
+          var amt = wfDivMap(current[si])[d.dates[di]];
+          if (amt) cash += shares[si] * amt;
+        }
+        var v = cash;
+        for (var sj = 0; sj < current.length; sj++) v += shares[sj] * current[sj].closes[di];
+        eq.push(v);
+      }
+      equity = eq[eq.length - 1];
+    }
+    return { startIdx: screens[startK].i, equity: eq, baskets: baskets };
+  }
+  function renderStrategyWF() {
+    var d = REAL.series;
+    var wf = btWalkForward(d);
+    var chartEl = document.getElementById("stChart");
+    if (!wf) {
+      chartEl.innerHTML = '<p class="sub-note">Ingen årsscreening ger någon korg – sänk Analys-filtren (särskilt minsta antal x-dagar, som är svårt att nå tidigt i historiken).</p>';
+      document.getElementById("stLegend").innerHTML = "";
+      document.getElementById("stStats").innerHTML = "";
+      setRealBanner("strategyBanner", "Riktig data (Yahoo) · out-of-sample: ingen korg klarar filtren");
+      return;
+    }
+    var dates = d.dates.slice(wf.startIdx);
+    var index = btIndex({ closes: d.index.closes.slice(wf.startIdx) }, dates, 0.03);
+    var series = [
+      { label: "Omscreenad korg", color: "var(--accent)", res: { equity: wf.equity, trades: [] } },
+      { label: "OMX (index)", color: "var(--ink-faint)", res: index }
+    ];
+    setRealBanner("strategyBanner", "Riktig data (Yahoo) · out-of-sample: korgen väljs om 1:a handelsdagen varje år med Analys-filtren på enbart dåvarande historik · " +
+      dates[0].slice(0, 4) + "–" + dates[dates.length - 1].slice(0, 4) + " · uppdaterad " + (REAL.series.generated || "").slice(0, 10));
+    chartEl.innerHTML = buildChart(series.map(function (s) { return { color: s.color, eq: s.res.equity }; }), dates);
+    document.getElementById("stLegend").innerHTML = series.map(function (s) {
+      return '<span class="lg"><span class="dot" style="background:' + s.color + '"></span>' + s.label + ' <b>' + Math.round(s.res.equity[s.res.equity.length - 1]) + '</b></span>';
+    }).join("");
+    var html = '<table><thead><tr>' +
+      '<th class="name">Strategi</th><th>Slutv.</th><th>Årsavk</th><th>Vol</th><th>Max ned</th><th>Sharpe</th>' +
+      '</tr></thead><tbody>';
+    series.forEach(function (s) {
+      var st = statsOf(s.res.equity);
+      html += '<tr>' +
+        '<td class="name"><span class="swatch" style="background:' + s.color + '"></span>' + s.label + '</td>' +
+        '<td>' + Math.round(st.last) + '</td>' +
+        '<td class="' + (st.cagr >= 0 ? "up" : "down") + '">' + (st.cagr >= 0 ? "+" : "−") + Math.abs(st.cagr).toFixed(1) + ' %</td>' +
+        '<td>' + st.vol.toFixed(1) + ' %</td>' +
+        '<td class="down">' + st.maxDD.toFixed(1) + ' %</td>' +
+        '<td>' + st.sharpe.toFixed(2) + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    html += '<div class="isk-note"><b>Korg per år</b> (vald med enbart data före respektive årsskifte):<br>' +
+      wf.baskets.map(function (b) { return b.year + ": " + b.names.join(", "); }).join("<br>") +
+      '<br><br>Jämför slutvärdet med facit-läget – skillnaden är hur mycket urval-i-efterhand smickrar siffrorna. Rotationsstrategin visas bara i facit-läget.</div>';
+    document.getElementById("stStats").innerHTML = html;
   }
   function renderStrategy() {
     syncStratUI();
+    if (strategyCfg.selection === "walkforward" && REAL.series) { renderStrategyWF(); return; }
     var d = stratData();
     if (d.empty) {
       document.getElementById("stChart").innerHTML = '<p class="sub-note">Inga aktier klarar Analys-filtren – korgen är tom. Sänk filtren under Analys.</p>';
@@ -1329,6 +1581,7 @@
   document.querySelectorAll("#stEntry button").forEach(function (b) { b.addEventListener("click", function () { strategyCfg.entryOffset = parseInt(b.getAttribute("data-entry"), 10); saveSCfg(); renderStrategy(); }); });
   document.querySelectorAll("#stExit button").forEach(function (b) { b.addEventListener("click", function () { strategyCfg.exitRule = b.getAttribute("data-exit"); saveSCfg(); renderStrategy(); }); });
   document.querySelectorAll("#stFee button").forEach(function (b) { b.addEventListener("click", function () { strategyCfg.courtage = parseFloat(b.getAttribute("data-fee")); saveSCfg(); renderStrategy(); }); });
+  document.querySelectorAll("#stSelection button").forEach(function (b) { b.addEventListener("click", function () { strategyCfg.selection = b.getAttribute("data-sel") === "walkforward" ? "walkforward" : "insample"; saveSCfg(); renderStrategy(); }); });
 
   // ================= MODE =================
   var portfolioView = document.getElementById("portfolioView");

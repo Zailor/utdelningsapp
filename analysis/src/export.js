@@ -79,7 +79,13 @@ function comboSummary(bars, dividends, indexBars, cfg) {
     recentFill: r2(summary.recentFill),
     years: summary.years,
     gain1000: r2(summary.avgGainPct == null ? null : summary.avgGainPct * 1000),
-    events: events.map((e) => ({ date: e.exDate, rec: e.recovery })),
+    // Per x-dag, för detaljvyn: utdelning, kurs före, fall, exit och utfall
+    // per 1 000 kr (gain, i kr). rec = handelsdagar till fyllt gap (null = ej).
+    events: events.map((e) => ({
+      date: e.exDate, rec: e.recovery,
+      amount: r2(e.amount), pre: r2(e.pBefore), drop: r2(e.drop),
+      exit: r2(e.exitClose), gain: r2(e.gainPct == null ? null : e.gainPct * 1000),
+    })),
   };
 }
 

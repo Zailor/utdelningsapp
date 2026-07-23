@@ -1,0 +1,1567 @@
+{
+  "generated": "2026-07-23T15:14:41.260Z",
+  "config": {
+    "window": 40,
+    "dropAt": "open",
+    "basis": "nominal",
+    "years": 8,
+    "universe": "large-cap",
+    "minYield": 0,
+    "minEvents": 1
+  },
+  "universeSize": 102,
+  "skipped": {
+    "noDividend": 8,
+    "belowMinYield": 0,
+    "tooFewEvents": 0
+  },
+  "rows": [
+    {
+      "name": "AddLife B",
+      "yield": 0.9584664536741214,
+      "window": 40,
+      "n": 7,
+      "fillRate": 100,
+      "medianRec": 0,
+      "fellRate": 28.57142857142857,
+      "avgRatio": 0.32813759956709954,
+      "maxRec": 15,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.015401399063456429
+    },
+    {
+      "name": "BioArctic B",
+      "yield": 0.6591957944080812,
+      "window": 40,
+      "n": 2,
+      "fillRate": 100,
+      "medianRec": 0,
+      "fellRate": 50,
+      "avgRatio": 0.6500015,
+      "maxRec": 0,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.04858788630434762
+    },
+    {
+      "name": "Engcon B",
+      "yield": 1.4992504434085345,
+      "window": 40,
+      "n": 7,
+      "fillRate": 100,
+      "medianRec": 0,
+      "fellRate": 0,
+      "avgRatio": -0.26944200070686364,
+      "maxRec": 21,
+      "recentFill": 100,
+      "years": [
+        2023,
+        2026
+      ],
+      "avgGainPct": 0.03386203049686265
+    },
+    {
+      "name": "Medicover B",
+      "yield": 1.0181872018348626,
+      "window": 40,
+      "n": 6,
+      "fillRate": 100,
+      "medianRec": 0,
+      "fellRate": 16.666666666666664,
+      "avgRatio": 0.041119047360234716,
+      "maxRec": 12,
+      "recentFill": 100,
+      "years": [
+        2021,
+        2026
+      ],
+      "avgGainPct": 0.03538801798027574
+    },
+    {
+      "name": "MilDef",
+      "yield": 0.32594523255362096,
+      "window": 40,
+      "n": 4,
+      "fillRate": 100,
+      "medianRec": 0,
+      "fellRate": 25,
+      "avgRatio": 0.08333833333333329,
+      "maxRec": 1,
+      "recentFill": 100,
+      "years": [
+        2022,
+        2026
+      ],
+      "avgGainPct": 0.020438209035010698
+    },
+    {
+      "name": "Vitrolife",
+      "yield": 1.2790697674418605,
+      "window": 40,
+      "n": 7,
+      "fillRate": 100,
+      "medianRec": 0,
+      "fellRate": 0,
+      "avgRatio": -0.5792598701298701,
+      "maxRec": 2,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.02313064841791856
+    },
+    {
+      "name": "Electrolux Professional B",
+      "yield": 2.085620232518155,
+      "window": 40,
+      "n": 5,
+      "fillRate": 100,
+      "medianRec": 1,
+      "fellRate": 0,
+      "avgRatio": -0.06087165260946483,
+      "maxRec": 12,
+      "recentFill": 100,
+      "years": [
+        2022,
+        2026
+      ],
+      "avgGainPct": 0.029294084139460934
+    },
+    {
+      "name": "EQT",
+      "yield": 1.4990328230214685,
+      "window": 40,
+      "n": 13,
+      "fillRate": 100,
+      "medianRec": 1,
+      "fellRate": 30.76923076923077,
+      "avgRatio": 0.5344572337646849,
+      "maxRec": 30,
+      "recentFill": 100,
+      "years": [
+        2020,
+        2026
+      ],
+      "avgGainPct": 0.02263925618095309
+    },
+    {
+      "name": "AstraZeneca",
+      "yield": 1.8929491222667076,
+      "window": 40,
+      "n": 16,
+      "fillRate": 100,
+      "medianRec": 2,
+      "fellRate": 31.25,
+      "avgRatio": 0.8226702382324579,
+      "maxRec": 32,
+      "recentFill": 100,
+      "years": [
+        2018,
+        2026
+      ],
+      "avgGainPct": 0.022058523930183378
+    },
+    {
+      "name": "Lundin Gold",
+      "yield": 7.032368960517424,
+      "window": 40,
+      "n": 16,
+      "fillRate": 100,
+      "medianRec": 2,
+      "fellRate": 12.5,
+      "avgRatio": 0.04518409089332127,
+      "maxRec": 21,
+      "recentFill": 100,
+      "years": [
+        2022,
+        2026
+      ],
+      "avgGainPct": 0.030424038046874685
+    },
+    {
+      "name": "Trelleborg B",
+      "yield": 1.9240019804866577,
+      "window": 40,
+      "n": 7,
+      "fillRate": 100,
+      "medianRec": 2,
+      "fellRate": 0,
+      "avgRatio": 0.6838915133275106,
+      "maxRec": 15,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.03618909259023112
+    },
+    {
+      "name": "Epiroc A",
+      "yield": 1.5573770491803278,
+      "window": 40,
+      "n": 16,
+      "fillRate": 100,
+      "medianRec": 2.5,
+      "fellRate": 25,
+      "avgRatio": 0.5779141552309082,
+      "maxRec": 37,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.020490062533353552
+    },
+    {
+      "name": "Ericsson B",
+      "yield": 3.1808277809682353,
+      "window": 40,
+      "n": 14,
+      "fillRate": 100,
+      "medianRec": 2.5,
+      "fellRate": 21.428571428571427,
+      "avgRatio": 0.7490506276016108,
+      "maxRec": 36,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.02675233350957212
+    },
+    {
+      "name": "Nolato B",
+      "yield": 3.5978835978835977,
+      "window": 40,
+      "n": 7,
+      "fillRate": 100,
+      "medianRec": 3,
+      "fellRate": 42.857142857142854,
+      "avgRatio": 0.3464957144489375,
+      "maxRec": 21,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.04886355338219255
+    },
+    {
+      "name": "Truecaller B",
+      "yield": 1.6985137375377306,
+      "window": 40,
+      "n": 3,
+      "fillRate": 100,
+      "medianRec": 3,
+      "fellRate": 0,
+      "avgRatio": 0.29229494397759104,
+      "maxRec": 5,
+      "recentFill": 100,
+      "years": [
+        2024,
+        2026
+      ],
+      "avgGainPct": 0.041813063207521345
+    },
+    {
+      "name": "Essity B",
+      "yield": 3.1957634733775913,
+      "window": 40,
+      "n": 8,
+      "fillRate": 100,
+      "medianRec": 3.5,
+      "fellRate": 50,
+      "avgRatio": 0.9996388203626836,
+      "maxRec": 13,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.04231039533918928
+    },
+    {
+      "name": "H&M B",
+      "yield": 4.2874767046966005,
+      "window": 40,
+      "n": 13,
+      "fillRate": 100,
+      "medianRec": 4,
+      "fellRate": 30.76923076923077,
+      "avgRatio": 0.904408946864006,
+      "maxRec": 34,
+      "recentFill": 100,
+      "years": [
+        2018,
+        2026
+      ],
+      "avgGainPct": 0.034338189904077485
+    },
+    {
+      "name": "Indutrade",
+      "yield": 1.28099173553719,
+      "window": 40,
+      "n": 7,
+      "fillRate": 100,
+      "medianRec": 4,
+      "fellRate": 42.857142857142854,
+      "avgRatio": 0.8365081515933358,
+      "maxRec": 23,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.020942888045571095
+    },
+    {
+      "name": "Hufvudstaden A",
+      "yield": 2.4308465430146273,
+      "window": 40,
+      "n": 8,
+      "fillRate": 100,
+      "medianRec": 4.5,
+      "fellRate": 12.5,
+      "avgRatio": 0.5374277101510946,
+      "maxRec": 15,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.03277581777884573
+    },
+    {
+      "name": "SCA B",
+      "yield": 2.8860029707299866,
+      "window": 40,
+      "n": 6,
+      "fillRate": 100,
+      "medianRec": 5.5,
+      "fellRate": 16.666666666666664,
+      "avgRatio": 1.4034655355422354,
+      "maxRec": 18,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.03277069754643012
+    },
+    {
+      "name": "Investor B",
+      "yield": 1.369862992683222,
+      "window": 40,
+      "n": 15,
+      "fillRate": 100,
+      "medianRec": 7,
+      "fellRate": 26.666666666666668,
+      "avgRatio": 0.7773221767444561,
+      "maxRec": 24,
+      "recentFill": 100,
+      "years": [
+        2018,
+        2026
+      ],
+      "avgGainPct": 0.018300372491916617
+    },
+    {
+      "name": "SKF B",
+      "yield": 1.567398137865672,
+      "window": 40,
+      "n": 8,
+      "fillRate": 100,
+      "medianRec": 8,
+      "fellRate": 50,
+      "avgRatio": 1.0814391624268878,
+      "maxRec": 25,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.047533129315263566
+    },
+    {
+      "name": "SkiStar B",
+      "yield": 1.8879799340674324,
+      "window": 40,
+      "n": 7,
+      "fillRate": 100,
+      "medianRec": 12,
+      "fellRate": 0,
+      "avgRatio": 0.4842482804814234,
+      "maxRec": 35,
+      "recentFill": 100,
+      "years": [
+        2018,
+        2025
+      ],
+      "avgGainPct": 0.02611681193746675
+    },
+    {
+      "name": "Atlas Copco A",
+      "yield": 2.0135918061413998,
+      "window": 40,
+      "n": 15,
+      "fillRate": 93.33333333333333,
+      "medianRec": 0.5,
+      "fellRate": 40,
+      "avgRatio": 0.8069663559703442,
+      "maxRec": 40,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.02267986479896568
+    },
+    {
+      "name": "Castellum",
+      "yield": 0.9498276300371974,
+      "window": 40,
+      "n": 15,
+      "fillRate": 93.33333333333333,
+      "medianRec": 1,
+      "fellRate": 46.666666666666664,
+      "avgRatio": 0.8481076360048939,
+      "maxRec": 38,
+      "recentFill": 100,
+      "years": [
+        2018,
+        2025
+      ],
+      "avgGainPct": 0.022512790516233373
+    },
+    {
+      "name": "Husqvarna B",
+      "yield": 2.7166529820495753,
+      "window": 40,
+      "n": 15,
+      "fillRate": 93.33333333333333,
+      "medianRec": 1.5,
+      "fellRate": 46.666666666666664,
+      "avgRatio": 0.8170927787037036,
+      "maxRec": 32,
+      "recentFill": 100,
+      "years": [
+        2018,
+        2026
+      ],
+      "avgGainPct": 0.017625188293941167
+    },
+    {
+      "name": "Assa Abloy B",
+      "yield": 1.8082916464659327,
+      "window": 40,
+      "n": 14,
+      "fillRate": 92.85714285714286,
+      "medianRec": 2,
+      "fellRate": 42.857142857142854,
+      "avgRatio": 0.7350951161114768,
+      "maxRec": 36,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.009043666214304713
+    },
+    {
+      "name": "Vitec B",
+      "yield": 1.6947565058802774,
+      "window": 40,
+      "n": 26,
+      "fillRate": 92.3076923076923,
+      "medianRec": 2,
+      "fellRate": 26.923076923076923,
+      "avgRatio": 0.7270852551357425,
+      "maxRec": 8,
+      "recentFill": 90,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.004941649342998929
+    },
+    {
+      "name": "Autoliv SDB",
+      "yield": 2.952406299212598,
+      "window": 40,
+      "n": 28,
+      "fillRate": 89.28571428571429,
+      "medianRec": 2,
+      "fellRate": 39.285714285714285,
+      "avgRatio": 1.0262287791254996,
+      "maxRec": 31,
+      "recentFill": 90,
+      "years": [
+        2018,
+        2026
+      ],
+      "avgGainPct": 0.00822611924596724
+    },
+    {
+      "name": "Sagax B",
+      "yield": 2.286773751676887,
+      "window": 40,
+      "n": 9,
+      "fillRate": 88.88888888888889,
+      "medianRec": 0,
+      "fellRate": 33.33333333333333,
+      "avgRatio": 0.9017127159753482,
+      "maxRec": 6,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.01141708346056664
+    },
+    {
+      "name": "Lagercrantz B",
+      "yield": 0.977777777777778,
+      "window": 40,
+      "n": 9,
+      "fillRate": 88.88888888888889,
+      "medianRec": 2.5,
+      "fellRate": 11.11111111111111,
+      "avgRatio": 0.1722818005203573,
+      "maxRec": 10,
+      "recentFill": 100,
+      "years": [
+        2018,
+        2025
+      ],
+      "avgGainPct": 0.017525047643723878
+    },
+    {
+      "name": "Avanza Bank",
+      "yield": 3.342947090728185,
+      "window": 40,
+      "n": 9,
+      "fillRate": 88.88888888888889,
+      "medianRec": 6,
+      "fellRate": 11.11111111111111,
+      "avgRatio": 0.8337861464223675,
+      "maxRec": 26,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.019772707092075712
+    },
+    {
+      "name": "Gränges",
+      "yield": 1.8252212081297947,
+      "window": 40,
+      "n": 9,
+      "fillRate": 88.88888888888889,
+      "medianRec": 11,
+      "fellRate": 33.33333333333333,
+      "avgRatio": 0.584855293849718,
+      "maxRec": 29,
+      "recentFill": 80,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.02725714307767381
+    },
+    {
+      "name": "Getinge B",
+      "yield": 2.0760489233583983,
+      "window": 40,
+      "n": 8,
+      "fillRate": 87.5,
+      "medianRec": 0,
+      "fellRate": 12.5,
+      "avgRatio": -0.43062396913100587,
+      "maxRec": 4,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.021685962596308696
+    },
+    {
+      "name": "Sectra B",
+      "yield": 0.7984790874524715,
+      "window": 40,
+      "n": 8,
+      "fillRate": 87.5,
+      "medianRec": 0,
+      "fellRate": 12.5,
+      "avgRatio": -0.9404774404761904,
+      "maxRec": 24,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2018,
+        2025
+      ],
+      "avgGainPct": 0.014930315470065363
+    },
+    {
+      "name": "AAK",
+      "yield": 4.675,
+      "window": 40,
+      "n": 8,
+      "fillRate": 87.5,
+      "medianRec": 1,
+      "fellRate": 25,
+      "avgRatio": 0.7339755933704623,
+      "maxRec": 23,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.01568243084484004
+    },
+    {
+      "name": "Bure Equity",
+      "yield": 1.029191569747853,
+      "window": 40,
+      "n": 8,
+      "fillRate": 87.5,
+      "medianRec": 1,
+      "fellRate": 12.5,
+      "avgRatio": 0.359065708080808,
+      "maxRec": 9,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.019259416476059697
+    },
+    {
+      "name": "Latour B",
+      "yield": 2.6438570043381153,
+      "window": 40,
+      "n": 8,
+      "fillRate": 87.5,
+      "medianRec": 1,
+      "fellRate": 25,
+      "avgRatio": 0.6582741756480266,
+      "maxRec": 5,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.020309780298056364
+    },
+    {
+      "name": "Mycronic",
+      "yield": 0.9291023766197306,
+      "window": 40,
+      "n": 8,
+      "fillRate": 87.5,
+      "medianRec": 1,
+      "fellRate": 12.5,
+      "avgRatio": 0.5025258301892552,
+      "maxRec": 5,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.023520177416932762
+    },
+    {
+      "name": "Ratos B",
+      "yield": 3.8482681662893383,
+      "window": 40,
+      "n": 8,
+      "fillRate": 87.5,
+      "medianRec": 1,
+      "fellRate": 12.5,
+      "avgRatio": 0.6392196741779662,
+      "maxRec": 24,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.03336254490954323
+    },
+    {
+      "name": "Lifco B",
+      "yield": 0.8681672025723474,
+      "window": 40,
+      "n": 8,
+      "fillRate": 87.5,
+      "medianRec": 2,
+      "fellRate": 12.5,
+      "avgRatio": 0.16450204874051066,
+      "maxRec": 29,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": -0.009685066680985352
+    },
+    {
+      "name": "Skanska B",
+      "yield": 5.376344212037638,
+      "window": 40,
+      "n": 8,
+      "fillRate": 87.5,
+      "medianRec": 6,
+      "fellRate": 12.5,
+      "avgRatio": 0.8572381771811522,
+      "maxRec": 24,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.01780068405211727
+    },
+    {
+      "name": "Arjo B",
+      "yield": 3.6314984921300724,
+      "window": 40,
+      "n": 8,
+      "fillRate": 87.5,
+      "medianRec": 7,
+      "fellRate": 37.5,
+      "avgRatio": 0.7449373127080626,
+      "maxRec": 25,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.018504504044750895
+    },
+    {
+      "name": "Fabege",
+      "yield": 2.839756709482755,
+      "window": 40,
+      "n": 23,
+      "fillRate": 86.95652173913044,
+      "medianRec": 2,
+      "fellRate": 30.434782608695656,
+      "avgRatio": 0.6894135292082018,
+      "maxRec": 26,
+      "recentFill": 72.72727272727273,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.005921517104830993
+    },
+    {
+      "name": "Wallenstam B",
+      "yield": 1.3520157224040696,
+      "window": 40,
+      "n": 15,
+      "fillRate": 86.66666666666667,
+      "medianRec": 0,
+      "fellRate": 13.333333333333334,
+      "avgRatio": 0.4234009520467837,
+      "maxRec": 10,
+      "recentFill": 80,
+      "years": [
+        2018,
+        2026
+      ],
+      "avgGainPct": 0.00951797712479391
+    },
+    {
+      "name": "NCC B",
+      "yield": 6.459189549548548,
+      "window": 40,
+      "n": 15,
+      "fillRate": 86.66666666666667,
+      "medianRec": 4,
+      "fellRate": 20,
+      "avgRatio": 0.8597038696866098,
+      "maxRec": 35,
+      "recentFill": 80,
+      "years": [
+        2018,
+        2026
+      ],
+      "avgGainPct": 0.019488876372940302
+    },
+    {
+      "name": "Beijer Ref B",
+      "yield": 1.0812825756925795,
+      "window": 40,
+      "n": 14,
+      "fillRate": 85.71428571428571,
+      "medianRec": 0,
+      "fellRate": 28.57142857142857,
+      "avgRatio": -0.21760364320074668,
+      "maxRec": 30,
+      "recentFill": 80,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.006827690795782432
+    },
+    {
+      "name": "Lindab",
+      "yield": 4.610226202269121,
+      "window": 40,
+      "n": 14,
+      "fillRate": 85.71428571428571,
+      "medianRec": 0,
+      "fellRate": 7.142857142857142,
+      "avgRatio": 0.239446634720059,
+      "maxRec": 19,
+      "recentFill": 60,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.007801975706337247
+    },
+    {
+      "name": "Lundbergföretagen B",
+      "yield": 0.8892921960072596,
+      "window": 40,
+      "n": 7,
+      "fillRate": 85.71428571428571,
+      "medianRec": 0.5,
+      "fellRate": 0,
+      "avgRatio": -0.5397009497540978,
+      "maxRec": 17,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.015907851767232074
+    },
+    {
+      "name": "Evolution",
+      "yield": 0,
+      "window": 40,
+      "n": 7,
+      "fillRate": 85.71428571428571,
+      "medianRec": 1.5,
+      "fellRate": 14.285714285714285,
+      "avgRatio": 0.41677637418399144,
+      "maxRec": 12,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2025
+      ],
+      "avgGainPct": 0.01743908922574525
+    },
+    {
+      "name": "Wihlborgs",
+      "yield": 4.3621942279420995,
+      "window": 40,
+      "n": 7,
+      "fillRate": 85.71428571428571,
+      "medianRec": 1.5,
+      "fellRate": 57.14285714285714,
+      "avgRatio": 1.1073201958026613,
+      "maxRec": 26,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2020,
+        2026
+      ],
+      "avgGainPct": 0.02482429022500086
+    },
+    {
+      "name": "Alfa Laval",
+      "yield": 1.5734265734265735,
+      "window": 40,
+      "n": 7,
+      "fillRate": 85.71428571428571,
+      "medianRec": 3,
+      "fellRate": 28.57142857142857,
+      "avgRatio": 0.629149854528478,
+      "maxRec": 7,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.009712532116629122
+    },
+    {
+      "name": "AFRY",
+      "yield": 5.970149253731343,
+      "window": 40,
+      "n": 7,
+      "fillRate": 85.71428571428571,
+      "medianRec": 3.5,
+      "fellRate": 14.285714285714285,
+      "avgRatio": 0.48225102597402597,
+      "maxRec": 19,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.02757343300656626
+    },
+    {
+      "name": "Sandvik",
+      "yield": 1.7406439766518844,
+      "window": 40,
+      "n": 7,
+      "fillRate": 85.71428571428571,
+      "medianRec": 5,
+      "fellRate": 14.285714285714285,
+      "avgRatio": 0.7656226322937171,
+      "maxRec": 29,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.034953894261328604
+    },
+    {
+      "name": "Systemair",
+      "yield": 1.6503666865951172,
+      "window": 40,
+      "n": 6,
+      "fillRate": 83.33333333333334,
+      "medianRec": 1,
+      "fellRate": 16.666666666666664,
+      "avgRatio": -0.26767701459034793,
+      "maxRec": 5,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2018,
+        2025
+      ],
+      "avgGainPct": 0.0075010690529065715
+    },
+    {
+      "name": "Dometic",
+      "yield": 0,
+      "window": 40,
+      "n": 6,
+      "fillRate": 83.33333333333334,
+      "medianRec": 3,
+      "fellRate": 16.666666666666664,
+      "avgRatio": 0.6333416047652549,
+      "maxRec": 3,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2025
+      ],
+      "avgGainPct": 0.01255259906183711
+    },
+    {
+      "name": "Stora Enso R",
+      "yield": 2.8028079797979797,
+      "window": 40,
+      "n": 11,
+      "fillRate": 81.81818181818183,
+      "medianRec": 2,
+      "fellRate": 27.27272727272727,
+      "avgRatio": 0.3119231261278857,
+      "maxRec": 22,
+      "recentFill": 80,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.06349773959990436
+    },
+    {
+      "name": "Betsson B",
+      "yield": 8.040821869037545,
+      "window": 40,
+      "n": 11,
+      "fillRate": 81.81818181818183,
+      "medianRec": 3,
+      "fellRate": 9.090909090909092,
+      "avgRatio": 0.5128385377743317,
+      "maxRec": 32,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.028080318517386616
+    },
+    {
+      "name": "Securitas B",
+      "yield": 2.8874484903464555,
+      "window": 40,
+      "n": 11,
+      "fillRate": 81.81818181818183,
+      "medianRec": 3,
+      "fellRate": 45.45454545454545,
+      "avgRatio": 0.9718166970005754,
+      "maxRec": 12,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.002378963019734424
+    },
+    {
+      "name": "Boliden",
+      "yield": 2.257336399662171,
+      "window": 40,
+      "n": 11,
+      "fillRate": 81.81818181818183,
+      "medianRec": 4,
+      "fellRate": 18.181818181818183,
+      "avgRatio": 0.5936763249382643,
+      "maxRec": 10,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.01837023136845838
+    },
+    {
+      "name": "Elekta B",
+      "yield": 5.226481044642261,
+      "window": 40,
+      "n": 16,
+      "fillRate": 81.25,
+      "medianRec": 1,
+      "fellRate": 18.75,
+      "avgRatio": -0.05628536368145748,
+      "maxRec": 7,
+      "recentFill": 80,
+      "years": [
+        2018,
+        2026
+      ],
+      "avgGainPct": 0.015209905748247318
+    },
+    {
+      "name": "Hemnet",
+      "yield": 1.144578313253012,
+      "window": 40,
+      "n": 5,
+      "fillRate": 80,
+      "medianRec": 0.5,
+      "fellRate": 40,
+      "avgRatio": 0.7070324449948402,
+      "maxRec": 18,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2022,
+        2026
+      ],
+      "avgGainPct": -0.0397186718496393
+    },
+    {
+      "name": "Pandox B",
+      "yield": 2.6564345703281576,
+      "window": 40,
+      "n": 5,
+      "fillRate": 80,
+      "medianRec": 2.5,
+      "fellRate": 20,
+      "avgRatio": -0.20826864812821588,
+      "maxRec": 5,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": -0.0019975725783706764
+    },
+    {
+      "name": "Thule",
+      "yield": 3.8894096707547927,
+      "window": 40,
+      "n": 14,
+      "fillRate": 78.57142857142857,
+      "medianRec": 3,
+      "fellRate": 35.714285714285715,
+      "avgRatio": 0.7761208912067662,
+      "maxRec": 29,
+      "recentFill": 80,
+      "years": [
+        2018,
+        2026
+      ],
+      "avgGainPct": 0.0012401604594500753
+    },
+    {
+      "name": "Axfood",
+      "yield": 3.7829657953104388,
+      "window": 40,
+      "n": 14,
+      "fillRate": 78.57142857142857,
+      "medianRec": 6,
+      "fellRate": 42.857142857142854,
+      "avgRatio": 0.9348768236484685,
+      "maxRec": 22,
+      "recentFill": 80,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.005398477533511334
+    },
+    {
+      "name": "Saab B",
+      "yield": 0.3672175078705912,
+      "window": 40,
+      "n": 9,
+      "fillRate": 77.77777777777779,
+      "medianRec": 1,
+      "fellRate": 11.11111111111111,
+      "avgRatio": 1.7055149825720792,
+      "maxRec": 11,
+      "recentFill": 60,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": -0.024948423414376135
+    },
+    {
+      "name": "Sweco B",
+      "yield": 2.857142857142857,
+      "window": 40,
+      "n": 9,
+      "fillRate": 77.77777777777779,
+      "medianRec": 1,
+      "fellRate": 11.11111111111111,
+      "avgRatio": 0.5059536143679474,
+      "maxRec": 8,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": -0.024365923661414702
+    },
+    {
+      "name": "Swedbank A",
+      "yield": 8.133187908408951,
+      "window": 40,
+      "n": 9,
+      "fillRate": 77.77777777777779,
+      "medianRec": 10,
+      "fellRate": 55.55555555555556,
+      "avgRatio": 0.9609178876098967,
+      "maxRec": 34,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.0515261180425608
+    },
+    {
+      "name": "NIBE B",
+      "yield": 0.9492812859761812,
+      "window": 40,
+      "n": 8,
+      "fillRate": 75,
+      "medianRec": 0,
+      "fellRate": 37.5,
+      "avgRatio": -0.22482100212690534,
+      "maxRec": 36,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": -0.016540625562620107
+    },
+    {
+      "name": "Telia",
+      "yield": 5.648957555529027,
+      "window": 40,
+      "n": 24,
+      "fillRate": 75,
+      "medianRec": 2,
+      "fellRate": 50,
+      "avgRatio": 0.9550012442166209,
+      "maxRec": 35,
+      "recentFill": 90.9090909090909,
+      "years": [
+        2018,
+        2026
+      ],
+      "avgGainPct": 0.012406187339099298
+    },
+    {
+      "name": "Addtech B",
+      "yield": 0.9411764705882354,
+      "window": 40,
+      "n": 8,
+      "fillRate": 75,
+      "medianRec": 2.5,
+      "fellRate": 25,
+      "avgRatio": 0.8223599245039682,
+      "maxRec": 11,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2018,
+        2025
+      ],
+      "avgGainPct": -0.008363016353273838
+    },
+    {
+      "name": "Loomis",
+      "yield": 4.0192925552013365,
+      "window": 40,
+      "n": 8,
+      "fillRate": 75,
+      "medianRec": 2.5,
+      "fellRate": 12.5,
+      "avgRatio": 0.4973364570823784,
+      "maxRec": 37,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.02822505694687799
+    },
+    {
+      "name": "Hexagon B",
+      "yield": 1.9489776042571523,
+      "window": 40,
+      "n": 8,
+      "fillRate": 75,
+      "medianRec": 4,
+      "fellRate": 25,
+      "avgRatio": 0.8087258479136479,
+      "maxRec": 21,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": -0.027416060627563243
+    },
+    {
+      "name": "ABB",
+      "yield": 1.1775289188711302,
+      "window": 40,
+      "n": 8,
+      "fillRate": 75,
+      "medianRec": 6.5,
+      "fellRate": 25,
+      "avgRatio": 0.8987792255044917,
+      "maxRec": 27,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.02423852827911016
+    },
+    {
+      "name": "Alleima",
+      "yield": 2.314814814814815,
+      "window": 40,
+      "n": 4,
+      "fillRate": 75,
+      "medianRec": 10,
+      "fellRate": 0,
+      "avgRatio": 0.7139365854037267,
+      "maxRec": 13,
+      "recentFill": 100,
+      "years": [
+        2023,
+        2026
+      ],
+      "avgGainPct": 0.030973885372728736
+    },
+    {
+      "name": "Bravida",
+      "yield": 2.7397260876783016,
+      "window": 40,
+      "n": 8,
+      "fillRate": 75,
+      "medianRec": 10.5,
+      "fellRate": 0,
+      "avgRatio": 0.7225772347198123,
+      "maxRec": 27,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.026018362055276856
+    },
+    {
+      "name": "Industrivärden C",
+      "yield": 1.6724005726012114,
+      "window": 40,
+      "n": 7,
+      "fillRate": 71.42857142857143,
+      "medianRec": 4,
+      "fellRate": 14.285714285714285,
+      "avgRatio": 0.8627123222152512,
+      "maxRec": 27,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.00949857859159536
+    },
+    {
+      "name": "Catena",
+      "yield": 2.370579115997608,
+      "window": 40,
+      "n": 13,
+      "fillRate": 69.23076923076923,
+      "medianRec": 0,
+      "fellRate": 23.076923076923077,
+      "avgRatio": 0.5398571876371051,
+      "maxRec": 13,
+      "recentFill": 40,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": -0.009513539309452947
+    },
+    {
+      "name": "SSAB A",
+      "yield": 2.060581135696638,
+      "window": 40,
+      "n": 6,
+      "fillRate": 66.66666666666666,
+      "medianRec": 4.5,
+      "fellRate": 16.666666666666664,
+      "avgRatio": 0.7545443686202686,
+      "maxRec": 36,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.018913194223577085
+    },
+    {
+      "name": "Electrolux B",
+      "yield": 0,
+      "window": 40,
+      "n": 9,
+      "fillRate": 66.66666666666666,
+      "medianRec": 11.5,
+      "fellRate": 88.88888888888889,
+      "avgRatio": 1.47115476839423,
+      "maxRec": 23,
+      "recentFill": 50,
+      "years": [
+        2018,
+        2022
+      ],
+      "avgGainPct": -0.002225047070844482
+    },
+    {
+      "name": "Holmen B",
+      "yield": 3.096479914598524,
+      "window": 40,
+      "n": 8,
+      "fillRate": 62.5,
+      "medianRec": 8,
+      "fellRate": 25,
+      "avgRatio": 0.9837314476048353,
+      "maxRec": 24,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": -0.005734244116933034
+    },
+    {
+      "name": "Nordea",
+      "yield": 5.631515947072002,
+      "window": 40,
+      "n": 8,
+      "fillRate": 62.5,
+      "medianRec": 13,
+      "fellRate": 0,
+      "avgRatio": 0.7753176485053226,
+      "maxRec": 39,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.050051553756204036
+    },
+    {
+      "name": "Tele2 B",
+      "yield": 5.214152502640216,
+      "window": 40,
+      "n": 17,
+      "fillRate": 58.82352941176471,
+      "medianRec": 6.5,
+      "fellRate": 41.17647058823529,
+      "avgRatio": 0.9323389989226329,
+      "maxRec": 29,
+      "recentFill": 60,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": -0.009581909592799115
+    },
+    {
+      "name": "Nordnet",
+      "yield": 2.3942092727556026,
+      "window": 40,
+      "n": 7,
+      "fillRate": 57.14285714285714,
+      "medianRec": 0,
+      "fellRate": 0,
+      "avgRatio": 0.6362456076042324,
+      "maxRec": 2,
+      "recentFill": 100,
+      "years": [
+        2021,
+        2026
+      ],
+      "avgGainPct": -0.034812377130793166
+    },
+    {
+      "name": "Handelsbanken A",
+      "yield": 12.37186311598395,
+      "window": 40,
+      "n": 7,
+      "fillRate": 57.14285714285714,
+      "medianRec": 28.5,
+      "fellRate": 85.71428571428571,
+      "avgRatio": 1.0438503946241913,
+      "maxRec": 38,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.04222291125669538
+    },
+    {
+      "name": "Billerud",
+      "yield": 2.8490029728556565,
+      "window": 40,
+      "n": 9,
+      "fillRate": 55.55555555555556,
+      "medianRec": 8,
+      "fellRate": 11.11111111111111,
+      "avgRatio": 0.7304891686809085,
+      "maxRec": 28,
+      "recentFill": 33.33333333333333,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": -0.018667979162755304
+    },
+    {
+      "name": "Peab B",
+      "yield": 3.313416511550845,
+      "window": 40,
+      "n": 8,
+      "fillRate": 50,
+      "medianRec": 0,
+      "fellRate": 50,
+      "avgRatio": 0.801682176686508,
+      "maxRec": 5,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": -0.01358821578534121
+    },
+    {
+      "name": "Tietoevry",
+      "yield": 6.855462485320245,
+      "window": 40,
+      "n": 14,
+      "fillRate": 50,
+      "medianRec": 5,
+      "fellRate": 14.285714285714285,
+      "avgRatio": 0.5453237129157606,
+      "maxRec": 22,
+      "recentFill": 40,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": -0.0010426591250819789
+    },
+    {
+      "name": "SEB A",
+      "yield": 5.104408352668213,
+      "window": 40,
+      "n": 8,
+      "fillRate": 37.5,
+      "medianRec": 8,
+      "fellRate": 75,
+      "avgRatio": 1.014482535296716,
+      "maxRec": 23,
+      "recentFill": 33.33333333333333,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.02901358440948374
+    },
+    {
+      "name": "Kinnevik B",
+      "yield": 0,
+      "window": 40,
+      "n": 3,
+      "fillRate": 33.33333333333333,
+      "medianRec": 1,
+      "fellRate": 0,
+      "avgRatio": 0.4623055861344538,
+      "maxRec": 1,
+      "recentFill": 33.33333333333333,
+      "years": [
+        2019,
+        2020
+      ],
+      "avgGainPct": -0.04972270253297822
+    },
+    {
+      "name": "Volvo B",
+      "yield": 3.6973833260323183,
+      "window": 40,
+      "n": 8,
+      "fillRate": 25,
+      "medianRec": 30.5,
+      "fellRate": 62.5,
+      "avgRatio": 1.0883576941292072,
+      "maxRec": 33,
+      "recentFill": 0,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.0038296950750411852
+    }
+  ]
+}
