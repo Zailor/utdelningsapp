@@ -298,7 +298,9 @@
   <div class="view" id="portfolioView">
     <p class="sub-note">Dina faktiska innehav. Välj aktie och köpdatum så hämtas kurser och utdelningar automatiskt ur kursdatan – justera köpkursen om ditt avslut skiljde sig från stängningen.</p>
 
-    <section class="card form" id="pForm">
+    <button class="btn btn-primary" id="p_showForm" style="width:100%">+ Lägg till aktie</button>
+
+    <section class="card form" id="pForm" hidden>
       <h2>Ny aktie</h2>
       <div class="grid">
         <div class="field full">
@@ -324,7 +326,10 @@
         </div>
       </div>
       <p class="err" id="p_err" role="alert"></p>
-      <div class="btn-row"><button class="btn btn-primary" id="p_add">Lägg till aktie</button></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="p_add">Lägg till aktie</button>
+        <button class="btn btn-ghost" id="p_cancelForm">Avbryt</button>
+      </div>
     </section>
 
     <div id="pSummary"></div>
@@ -995,8 +1000,7 @@
     ["p_name", "p_curPrice", "p_buyDate", "p_buyShares", "p_buyPrice"].forEach(function (id) { document.getElementById(id).value = ""; });
     document.getElementById("p_buyPrice").dataset.auto = "0";
     document.getElementById("p_buyDate").value = todayISO();
-    pSyncForm();
-    document.getElementById("p_name").focus();
+    pShowForm(false); // fäll ihop efter tillagd aktie
   }
   function pFail(m) { pErr.textContent = m; return false; }
   // Autokoppling i formuläret: känd aktie → dölj kursfältet, förifyll köpkurs
@@ -1016,6 +1020,14 @@
   document.getElementById("p_name").addEventListener("input", pSyncForm);
   document.getElementById("p_buyDate").addEventListener("change", pSyncForm);
   document.getElementById("p_buyPrice").addEventListener("input", function () { this.dataset.auto = "0"; });
+  // Formuläret är dolt tills man klickar "+ Lägg till aktie"
+  function pShowForm(show) {
+    document.getElementById("pForm").hidden = !show;
+    document.getElementById("p_showForm").hidden = show;
+    if (show) { document.getElementById("p_name").focus(); pSyncForm(); }
+  }
+  document.getElementById("p_showForm").addEventListener("click", function () { pShowForm(true); });
+  document.getElementById("p_cancelForm").addEventListener("click", function () { pErr.textContent = ""; pShowForm(false); });
   document.getElementById("p_add").addEventListener("click", addHolding);
   // Portfölj i länken: hela portföljen serialiseras till #p=<base64> – gratis
   // synk mellan enheter utan server eller konto. Öppna länken på en annan
