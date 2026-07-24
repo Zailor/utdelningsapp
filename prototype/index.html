@@ -863,8 +863,11 @@
       var stock = pStockBySym(h.sym);
       var c = stock ? pCloseAt(stock, ev.exDate) : null;
       if (!c) return;
-      h.tx.push({ id: uid(), type: "reinvest", date: ev.exDate, shares: ev.amount / c.price, price: c.price, src: ev.exDate });
-      saveHoldings(); renderPortfolio();
+      // Öppna formuläret förifyllt så kurs och antal kan justeras före spar
+      expanded[h.id] = true;
+      eventForm = { holdingId: h.id, txId: null, type: "reinvest", src: ev.exDate,
+        prefill: { date: ev.exDate, shares: Math.round(ev.amount / c.price * 10000) / 10000, price: c.price } };
+      renderPortfolio();
     });
     return row;
   }
@@ -908,6 +911,7 @@
     var isAuto = !!pStockBySym(h.sym);
     if (isAuto && eventForm.type === "dividend") eventForm.type = "buy"; // utdelningar sköts automatiskt
     var type = eventForm.type;
+    var pre = (!isEdit && eventForm.prefill) || null;
     var wrap = document.createElement("div"); wrap.className = "mini-form";
     var isDiv = type === "dividend";
 
@@ -918,11 +922,11 @@
         '<button data-type="reinvest" class="' + (type === "reinvest" ? "active" : "") + '">Återinv.</button>' +
       '</div>' +
       '<div class="mini-grid">' +
-        '<div class="field"><label>Datum</label><div class="inputwrap"><input type="date" data-role="date" value="' + esc(ex && ex.date ? ex.date : todayISO()) + '"></div></div>' +
+        '<div class="field"><label>Datum</label><div class="inputwrap"><input type="date" data-role="date" value="' + esc(ex && ex.date ? ex.date : (pre ? pre.date : todayISO())) + '"></div></div>' +
         (isDiv
           ? '<div class="field"><label>Utdelning (kr)</label><div class="inputwrap has-suffix"><input class="num" type="number" inputmode="decimal" step="any" data-role="amount" value="' + (ex ? ex.amount : "") + '" placeholder="0"><span class="suffix">kr</span></div></div>'
-          : '<div class="field"><label>Antal aktier</label><div class="inputwrap has-suffix"><input class="num" type="number" inputmode="decimal" step="any" data-role="shares" value="' + (ex && ex.shares != null ? ex.shares : "") + '" placeholder="0"><span class="suffix">st</span></div></div>' +
-            '<div class="field"><label>Kurs</label><div class="inputwrap has-suffix"><input class="num" type="number" inputmode="decimal" step="any" data-role="price" value="' + (ex && ex.price != null ? ex.price : "") + '" placeholder="0"><span class="suffix">kr</span></div></div>') +
+          : '<div class="field"><label>Antal aktier</label><div class="inputwrap has-suffix"><input class="num" type="number" inputmode="decimal" step="any" data-role="shares" value="' + (ex && ex.shares != null ? ex.shares : (pre ? pre.shares : "")) + '" placeholder="0"><span class="suffix">st</span></div></div>' +
+            '<div class="field"><label>Kurs</label><div class="inputwrap has-suffix"><input class="num" type="number" inputmode="decimal" step="any" data-role="price" value="' + (ex && ex.price != null ? ex.price : (pre ? pre.price : "")) + '" placeholder="0"><span class="suffix">kr</span></div></div>') +
       '</div>' +
       '<p class="mini-err" data-role="miniErr"></p>' +
       '<div class="btn-row">' +
@@ -958,7 +962,9 @@
       var sh = f("shares"), pr = f("price");
       if (isNaN(sh) || sh <= 0) { errEl.textContent = "Ange antal aktier större än noll."; return; }
       if (isNaN(pr) || pr <= 0) { errEl.textContent = "Ange en kurs större än noll."; return; }
-      writeTx(h, { type: type, date: date, shares: sh, price: pr });
+      var data = { type: type, date: date, shares: sh, price: pr };
+      if (type === "reinvest" && eventForm.src) data.src = eventForm.src;
+      writeTx(h, data);
     }
     eventForm = null; saveHoldings(); renderPortfolio();
   }
