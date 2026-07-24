@@ -58,7 +58,7 @@ datakällor och metodik. Genvägar: `make analyze`, `make validate`.
 ## Daglig uppdatering (GitHub Actions)
 
 `.github/workflows/uppdatera-data.yml` kör varje vardag direkt efter
-börsstängning (16:30 UTC = 17:30/18:30 svensk tid): inkrementell hämtning → export → auto-commit av
+börsstängning (17:45 svensk tid, sommar- som vintertid): inkrementell hämtning → export → auto-commit av
 `analysis/data/` + `prototype/data/`. Kan startas manuellt från Actions-fliken
 ("Run workflow"). Kör `git pull` lokalt för att få hem senaste datan.
 
@@ -66,8 +66,10 @@ börsstängning (16:30 UTC = 17:30/18:30 svensk tid): inkrementell hämtning →
 
 1. **Klart:** riktig data i alla flikar, daglig uppdatering via Actions,
    out-of-sample-backtest.
-2. **Nästa:** deploya `prototype/` statiskt → appen i mobilen. Ingen server,
-   ingen databas krävs.
+2. **Nästa:** deploya `prototype/` statiskt → appen i mobilen. `vercel.json`
+   i repo-roten är förberedd: importera repot på vercel.com så serveras
+   `prototype/` direkt, och varje datacommit från Actions deployar om sajten
+   automatiskt. Ingen server, ingen databas krävs.
 3. **Senare:** rotation med flera parallella positioner (dela kapitalet i N
    högar), och ev. molnsynk av portföljen när den ska sparas mellan enheter.
 

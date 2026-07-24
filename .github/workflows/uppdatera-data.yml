@@ -3,7 +3,11 @@ name: Uppdatera kursdata
 
 on:
   schedule:
-    - cron: "30 16 * * 1-5" # vardagar 16:30 UTC = 17:30 svensk vintertid / 18:30 sommartid, direkt efter börsstängning
+    # Mål: 17:45 svensk tid året runt (börsen stänger 17:30). GitHub-cron går i
+    # UTC, så två triggers täcker sommar-/vintertid och vaktjobbet nedan
+    # släpper bara igenom den som matchar Stockholms aktuella UTC-offset.
+    - cron: "45 15 * * 1-5" # 17:45 CEST (sommartid)
+    - cron: "45 16 * * 1-5" # 17:45 CET (vintertid)
   workflow_dispatch: # gör att körningen kan startas manuellt från Actions-fliken
 
 concurrency:
@@ -14,7 +18,30 @@ permissions:
   contents: write
 
 jobs:
+  vakt:
+    runs-on: ubuntu-latest
+    outputs:
+      kor: ${{ steps.tid.outputs.kor }}
+    steps:
+      - name: Släpp igenom rätt säsongstrigger
+        id: tid
+        run: |
+          OFFSET=$(TZ=Europe/Stockholm date +%z)
+          CRON="${{ github.event.schedule }}"
+          if [ -z "$CRON" ]; then
+            echo "Manuell körning."; echo "kor=ja" >> "$GITHUB_OUTPUT"
+          elif [ "$CRON" = "45 15 * * 1-5" ] && [ "$OFFSET" = "+0200" ]; then
+            echo "Sommartid – kör."; echo "kor=ja" >> "$GITHUB_OUTPUT"
+          elif [ "$CRON" = "45 16 * * 1-5" ] && [ "$OFFSET" = "+0100" ]; then
+            echo "Vintertid – kör."; echo "kor=ja" >> "$GITHUB_OUTPUT"
+          else
+            echo "Fel säsongstrigger ($CRON vid offset $OFFSET) – hoppar över."
+            echo "kor=nej" >> "$GITHUB_OUTPUT"
+          fi
+
   fetch:
+    needs: vakt
+    if: needs.vakt.outputs.kor == 'ja'
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
