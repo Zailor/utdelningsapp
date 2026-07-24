@@ -57,8 +57,8 @@ datakällor och metodik. Genvägar: `make analyze`, `make validate`.
 
 ## Daglig uppdatering (GitHub Actions)
 
-`.github/workflows/uppdatera-data.yml` kör varje vardagkväll efter
-börsstängning (18:30 UTC): inkrementell hämtning → export → auto-commit av
+`.github/workflows/uppdatera-data.yml` kör varje vardag direkt efter
+börsstängning (16:30 UTC = 17:30/18:30 svensk tid): inkrementell hämtning → export → auto-commit av
 `analysis/data/` + `prototype/data/`. Kan startas manuellt från Actions-fliken
 ("Run workflow"). Kör `git pull` lokalt för att få hem senaste datan.
 

@@ -3,7 +3,7 @@ name: Uppdatera kursdata
 
 on:
   schedule:
-    - cron: "30 18 * * 1-5" # vardagar 18:30 UTC = 20:30 svensk sommartid, efter börsstängning
+    - cron: "30 16 * * 1-5" # vardagar 16:30 UTC = 17:30 svensk vintertid / 18:30 sommartid, direkt efter börsstängning
   workflow_dispatch: # gör att körningen kan startas manuellt från Actions-fliken
 
 concurrency:
