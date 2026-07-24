@@ -793,7 +793,7 @@
         '<span>Utdelning <b>' + krPlain(c.divReceived) + '</b></span>' +
       '</div>' +
       '<div class="events-bar">' +
-        '<button class="toggle-events' + (expanded[h.id] ? ' open' : '') + '" data-role="toggle"><span class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>Händelser (' + h.tx.length + ')</button>' +
+        '<button class="toggle-events' + (expanded[h.id] ? ' open' : '') + '" data-role="toggle"><span class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>Händelser (' + (h.tx.length + autoDivEvents(h).length) + ')</button>' +
         '<button class="add-event" data-role="addEvent">+ Lägg till</button>' +
       '</div>' +
       '<div class="events-body" data-role="body"></div>';
@@ -830,11 +830,51 @@
     return card;
   }
 
+  // Utdelningar ur kursdatan, med antal aktier vid varje x-dag. Visas som
+  // händelser och kan återinvesteras med ett klick (skapar en Återinv.-händelse
+  // prissatt till stängningen på x-dagen; ta bort den för att ångra).
+  function autoDivEvents(h) {
+    var stock = pStockBySym(h.sym);
+    if (!stock) return [];
+    var evs = [];
+    stock.dividends.forEach(function (dv) {
+      var held = 0;
+      h.tx.forEach(function (t) {
+        if ((t.type === "buy" || t.type === "reinvest") && (!t.date || t.date < dv.exDate)) held += t.shares || 0;
+      });
+      if (held > 0) evs.push({ exDate: dv.exDate, perShare: dv.amount, amount: held * dv.amount });
+    });
+    return evs;
+  }
+  function buildAutoDivRow(h, ev) {
+    var row = document.createElement("div"); row.className = "event-row";
+    var reinvested = h.tx.some(function (t) { return t.type === "reinvest" && t.src === ev.exDate; });
+    row.innerHTML =
+      '<span class="event-tag dividend">Utdelning</span>' +
+      '<div class="event-main"><div class="event-detail">+' + krPlain(ev.amount) + '</div>' +
+      '<div class="event-date">' + ev.exDate + '  ·  ' + nf2.format(ev.perShare) + ' kr/aktie · auto</div></div>' +
+      '<div class="event-actions">' +
+      (reinvested
+        ? '<span class="hint" style="white-space:nowrap">Återinvesterad ✓</span>'
+        : '<button class="add-event" data-role="reinvestDiv">Återinvestera</button>') +
+      '</div>';
+    var btn = row.querySelector('[data-role="reinvestDiv"]');
+    if (btn) btn.addEventListener("click", function () {
+      var stock = pStockBySym(h.sym);
+      var c = stock ? pCloseAt(stock, ev.exDate) : null;
+      if (!c) return;
+      h.tx.push({ id: uid(), type: "reinvest", date: ev.exDate, shares: ev.amount / c.price, price: c.price, src: ev.exDate });
+      saveHoldings(); renderPortfolio();
+    });
+    return row;
+  }
   function renderEvents(body, h) {
     body.innerHTML = "";
     var list = document.createElement("div"); list.className = "events";
-    h.tx.slice().sort(function (a, b) { return (a.date || "9999") < (b.date || "9999") ? -1 : 1; })
-      .forEach(function (t) { list.appendChild(buildEventRow(h, t)); });
+    var rows = h.tx.map(function (t) { return { d: t.date || "9999", el: buildEventRow(h, t) }; });
+    autoDivEvents(h).forEach(function (ev) { rows.push({ d: ev.exDate, el: buildAutoDivRow(h, ev) }); });
+    rows.sort(function (a, b) { return a.d < b.d ? -1 : 1; });
+    rows.forEach(function (r) { list.appendChild(r.el); });
     body.appendChild(list);
     if (eventForm && eventForm.holdingId === h.id) body.appendChild(buildEventForm(h));
   }
@@ -865,6 +905,8 @@
   function buildEventForm(h) {
     var isEdit = !!eventForm.txId;
     var ex = isEdit ? h.tx.filter(function (o) { return o.id === eventForm.txId; })[0] : null;
+    var isAuto = !!pStockBySym(h.sym);
+    if (isAuto && eventForm.type === "dividend") eventForm.type = "buy"; // utdelningar sköts automatiskt
     var type = eventForm.type;
     var wrap = document.createElement("div"); wrap.className = "mini-form";
     var isDiv = type === "dividend";
@@ -872,7 +914,7 @@
     wrap.innerHTML =
       '<div class="seg" data-role="seg">' +
         '<button data-type="buy" class="' + (type === "buy" ? "active" : "") + '">Köp</button>' +
-        '<button data-type="dividend" class="' + (isDiv ? "active" : "") + '">Utdelning</button>' +
+        (isAuto ? '' : '<button data-type="dividend" class="' + (isDiv ? "active" : "") + '">Utdelning</button>') +
         '<button data-type="reinvest" class="' + (type === "reinvest" ? "active" : "") + '">Återinv.</button>' +
       '</div>' +
       '<div class="mini-grid">' +
@@ -893,6 +935,12 @@
     });
     wrap.querySelector('[data-role="cancelTx"]').addEventListener("click", function () { eventForm = null; renderPortfolio(); });
     wrap.querySelector('[data-role="saveTx"]').addEventListener("click", function () { saveTx(h, wrap); });
+    // Kurs följer köpdatumet för aktier ur kursdatan (redigerbar efteråt)
+    var dEl = wrap.querySelector('[data-role="date"]'), prEl = wrap.querySelector('[data-role="price"]');
+    if (isAuto && dEl && prEl) dEl.addEventListener("change", function () {
+      var c = pCloseAt(pStockBySym(h.sym), dEl.value);
+      if (c) prEl.value = c.price;
+    });
     return wrap;
   }
 
