@@ -296,16 +296,17 @@
 
   <!-- ============ PORTFOLIO VIEW ============ -->
   <div class="view" id="portfolioView">
-    <p class="sub-note">Dina faktiska innehav i kronor – ange antal aktier och kurs för varje köp, plus utdelning och återinvestering.</p>
+    <p class="sub-note">Dina faktiska innehav. Välj aktie och köpdatum så hämtas kurser och utdelningar automatiskt ur kursdatan – justera köpkursen om ditt avslut skiljde sig från stängningen.</p>
 
     <section class="card form" id="pForm">
       <h2>Ny aktie</h2>
       <div class="grid">
         <div class="field full">
           <label for="p_name">Aktie <span class="hint">– namn eller ticker</span></label>
-          <div class="inputwrap"><input type="text" id="p_name" placeholder="t.ex. Investor B" autocomplete="off"></div>
+          <div class="inputwrap"><input type="text" id="p_name" placeholder="t.ex. Investor B" autocomplete="off" list="stockList"></div>
+          <datalist id="stockList"></datalist>
         </div>
-        <div class="field">
+        <div class="field" id="p_curField">
           <label for="p_curPrice">Nuvarande kurs</label>
           <div class="inputwrap has-suffix"><input class="num" type="number" id="p_curPrice" inputmode="decimal" step="any" placeholder="= köpkurs"><span class="suffix">kr</span></div>
         </div>
@@ -326,13 +327,22 @@
       <div class="btn-row"><button class="btn btn-primary" id="p_add">Lägg till aktie</button></div>
     </section>
 
+    <div id="pSummary"></div>
+
     <div class="list-head">
       <h2>Din portfölj</h2>
-      <button class="clear-all" id="p_clear" hidden>Rensa alla</button>
+      <span>
+        <button class="clear-all" id="p_share" hidden>Kopiera delningslänk</button>
+        <button class="clear-all" id="p_clear" hidden>Rensa alla</button>
+      </span>
     </div>
     <div id="stocks" class="stocks"></div>
 
     <footer>
+      Aktier ur kursdatan får kurs och utdelningar automatiskt (uppdateras varje börsdag);
+      egna utdelningshändelser behövs bara för innehav utanför listan.<br>
+      Spara/synka mellan enheter: "Kopiera delningslänk" lägger hela portföljen i en länk –
+      öppna den på en annan enhet (eller spara som bokmärke) så läses portföljen in där. Ingen server, inget konto.<br>
       Avkastning inkl. utdelning = marknadsvärde nu + utdelning i fickan − insatt eget kapital.<br>
       Exkl. utdelning räknar bara kursutvecklingen på det du köpt för egna pengar.
     </footer>
@@ -568,6 +578,16 @@
     var hm = (location.hash || "").slice(1);
     if (hm === "compare" || hm === "portfolio" || hm === "analysis" || hm === "strategy") m = hm;
     if (m === "compare" || m === "portfolio" || m === "analysis" || m === "strategy") mode = m;
+    // Portfölj i länken (#p=...): läs in efter bekräftelse
+    if (hm.indexOf("p=") === 0) {
+      try {
+        var imported = JSON.parse(decodeURIComponent(escape(atob(hm.slice(2)))));
+        if (Array.isArray(imported) && (!holdings.length || confirm("Länken innehåller en portfölj (" + imported.length + " innehav). Ersätta portföljen på den här enheten?"))) {
+          holdings = imported; saveHoldings(); mode = "portfolio";
+        }
+      } catch (e) {}
+      try { history.replaceState(null, "", location.pathname); } catch (e) {}
+    }
   }
   function fromV2Holding(h) {
     return {
@@ -587,6 +607,40 @@
   function saveHoldings() { writeJSON(H_KEY, holdings); }
   function saveCompares() { writeJSON(C_KEY, compares); }
 
+  // ---------- riktig data för portföljen ----------
+  function pStockBySym(sym) {
+    if (!REAL.series || !sym) return null;
+    for (var i = 0; i < REAL.series.stocks.length; i++) if (REAL.series.stocks[i].symbol === sym) return REAL.series.stocks[i];
+    return null;
+  }
+  function pStockByName(name) {
+    if (!REAL.series || !name) return null;
+    var n = name.trim().toLowerCase();
+    for (var i = 0; i < REAL.series.stocks.length; i++) if (REAL.series.stocks[i].name.toLowerCase() === n) return REAL.series.stocks[i];
+    return null;
+  }
+  function pCloseAt(stock, date) { // första handelsdag på/efter datumet
+    var d = REAL.series.dates;
+    var i = 0; while (i < d.length - 1 && d[i] < date) i++;
+    return stock.closes[i] != null ? { price: stock.closes[i], date: d[i] } : null;
+  }
+  // Automatik för innehav kopplade till kursdatan: senaste kurs + utdelningar
+  // beräknade från faktiskt antal aktier vid varje x-dag.
+  function pAuto(h) {
+    var stock = pStockBySym(h.sym);
+    if (!stock) return null;
+    var d = REAL.series.dates, last = d.length - 1;
+    if (stock.closes[last] == null) return null;
+    var div = 0;
+    stock.dividends.forEach(function (dv) {
+      var held = 0;
+      h.tx.forEach(function (t) {
+        if ((t.type === "buy" || t.type === "reinvest") && (!t.date || t.date < dv.exDate)) held += t.shares || 0;
+      });
+      div += held * dv.amount;
+    });
+    return { price: stock.closes[last], priceDate: d[last], div: div };
+  }
   // ---------- math ----------
   function sharesOf(t) { return t.shares || 0; }
   function amountOf(t) { return (t.shares || 0) * (t.price || 0); }
@@ -597,8 +651,10 @@
       else if (t.type === "reinvest") { divReinvested += amountOf(t); reinvestShares += sharesOf(t); }
       else if (t.type === "dividend") { divReceived += t.amount; }
     });
+    var auto = pAuto(h);
+    if (auto) divReceived = auto.div; // riktiga utdelningar ersätter manuella händelser
     var shares = ownShares + reinvestShares;
-    var price = h.currentPrice || 0;
+    var price = auto ? auto.price : (h.currentPrice || 0);
     var marketValue = shares * price;
     var divCash = divReceived - divReinvested;
     var priceValue = ownShares * price;
@@ -611,7 +667,8 @@
       divReceived: divReceived, priceAbs: priceAbs, totalAbs: totalAbs, divAbs: divAbs,
       pricePct: has ? priceAbs / ownCapital * 100 : null,
       totalPct: has ? totalAbs / ownCapital * 100 : null,
-      divPct: has ? divAbs / ownCapital * 100 : null
+      divPct: has ? divAbs / ownCapital * 100 : null,
+      auto: auto
     };
   }
   function computeCompare(c) {
@@ -648,11 +705,52 @@
   function renderPortfolio() {
     stocksEl.innerHTML = "";
     pClear.hidden = holdings.length === 0;
+    var shareBtn = document.getElementById("p_share");
+    if (shareBtn) shareBtn.hidden = holdings.length === 0;
+    renderPortfolioSummary();
     if (!holdings.length) { stocksEl.appendChild(emptyEl("Inga aktier än. Lägg till din första ovan.")); return; }
     var computed = holdings.map(function (h) { return { h: h, c: computeHolding(h) }; });
     computed.sort(function (a, b) { return valOr(b.c.totalPct) - valOr(a.c.totalPct); });
     var maxAbs = maxOf(computed.map(function (x) { return x.c.totalPct; }));
     computed.forEach(function (x) { stocksEl.appendChild(buildHoldingCard(x.h, x.c, maxAbs)); });
+  }
+  // Summering: hela portföljen + "vad hade OMX gett för samma insättningar samma dagar"
+  function renderPortfolioSummary() {
+    var el = document.getElementById("pSummary");
+    if (!el) return;
+    el.innerHTML = "";
+    if (!holdings.length) return;
+    var own = 0, value = 0, div = 0;
+    holdings.forEach(function (h) {
+      var c = computeHolding(h);
+      own += c.ownCapital; value += c.marketValue; div += c.divReceived;
+    });
+    var tot = value + div - own;
+    var omxHtml = "";
+    if (REAL.series) {
+      var d = REAL.series.dates, idx = REAL.series.index.closes, last = d.length - 1;
+      var omxCap = 0, omxVal = 0;
+      holdings.forEach(function (h) {
+        h.tx.forEach(function (t) {
+          if (t.type !== "buy" || !t.date) return;
+          var i = 0; while (i < last && d[i] < t.date) i++;
+          if (idx[i]) { var amt = (t.shares || 0) * (t.price || 0); omxCap += amt; omxVal += amt * idx[last] / idx[i]; }
+        });
+      });
+      if (omxCap > 0) {
+        var omxPct = (omxVal / omxCap - 1) * 100;
+        omxHtml = '<span>OMX samma insättningar <b class="' + cls(omxPct) + '">' + pct(omxPct) + '</b> <span class="hint">exkl. utd</span></span>';
+      }
+    }
+    var card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = '<div class="summary" style="padding:14px 16px;flex-wrap:wrap;gap:10px 18px">' +
+      '<span>Insatt <b>' + krPlain(own) + '</b></span>' +
+      '<span>Värde nu <b>' + krPlain(value) + '</b></span>' +
+      '<span>Utdelningar <b>' + krPlain(div) + '</b></span>' +
+      '<span>Totalt <b class="' + cls(tot) + '">' + kr(tot) + (own > 0 ? " (" + pct(tot / own * 100) + ")" : "") + '</b></span>' +
+      omxHtml + '</div>';
+    el.appendChild(card);
   }
   function valOr(v) { return v === null ? -Infinity : v; }
   function emptyEl(txt) { var e = document.createElement("div"); e.className = "empty"; e.textContent = txt; return e; }
@@ -673,9 +771,11 @@
           '<button class="icon-btn del" data-role="delHolding" title="Ta bort aktie">✕</button>' +
         '</div>' +
       '</div>' +
-      '<div class="price-line">Nuvarande kurs' +
-        '<div class="inputwrap has-suffix" style="width:112px"><input class="num" data-role="curPrice" type="number" inputmode="decimal" step="any" value="' + (h.currentPrice != null ? h.currentPrice : "") + '" style="padding:7px 9px;font-size:.92rem"><span class="suffix">kr</span></div>' +
-      '</div>' +
+      (c.auto
+        ? '<div class="price-line">Kurs <b style="margin:0 6px">' + nf2.format(c.auto.price) + ' kr</b> <span class="hint">auto · ' + c.auto.priceDate + '</span></div>'
+        : '<div class="price-line">Nuvarande kurs' +
+          '<div class="inputwrap has-suffix" style="width:112px"><input class="num" data-role="curPrice" type="number" inputmode="decimal" step="any" value="' + (h.currentPrice != null ? h.currentPrice : "") + '" style="padding:7px 9px;font-size:.92rem"><span class="suffix">kr</span></div>' +
+          '</div>') +
       '<div class="headline">' +
         '<span class="pct ' + cls(c.totalPct) + '">' + pct(c.totalPct) + '</span>' +
         '<span class="abs ' + cls(c.totalAbs) + '">' + kr(c.totalAbs) + '</span>' +
@@ -715,8 +815,8 @@
     } else {
       card.querySelector('[data-role="editName"]').addEventListener("click", function () { editingHoldingId = h.id; renderPortfolio(); });
     }
-    var pi = card.querySelector('[data-role="curPrice"]');
-    pi.addEventListener("change", function () { var v = parseFloat(pi.value.replace(",", ".")); h.currentPrice = isNaN(v) ? 0 : v; saveHoldings(); renderPortfolio(); });
+    var pi = card.querySelector('[data-role="curPrice"]'); // finns inte när kursen hämtas automatiskt
+    if (pi) pi.addEventListener("change", function () { var v = parseFloat(pi.value.replace(",", ".")); h.currentPrice = isNaN(v) ? 0 : v; saveHoldings(); renderPortfolio(); });
     card.querySelector('[data-role="toggle"]').addEventListener("click", function () {
       expanded[h.id] = !expanded[h.id];
       if (!expanded[h.id] && eventForm && eventForm.holdingId === h.id) eventForm = null;
@@ -835,14 +935,45 @@
     if (shares <= 0) return pFail("Antal aktier måste vara större än noll.");
     if (price <= 0) return pFail("Köpkursen måste vara större än noll.");
     if (cur !== null && cur < 0) return pFail("Kursen kan inte vara negativ.");
-    holdings.push({ id: uid(), name: name, currentPrice: (cur === null ? price : cur), tx: [{ id: uid(), type: "buy", date: date, shares: shares, price: price }] });
+    var match = pStockByName(name);
+    holdings.push({ id: uid(), name: match ? match.name : name, sym: match ? match.symbol : undefined, currentPrice: (cur === null ? price : cur), tx: [{ id: uid(), type: "buy", date: date, shares: shares, price: price }] });
     saveHoldings(); renderPortfolio();
     ["p_name", "p_curPrice", "p_buyDate", "p_buyShares", "p_buyPrice"].forEach(function (id) { document.getElementById(id).value = ""; });
+    document.getElementById("p_buyPrice").dataset.auto = "0";
     document.getElementById("p_buyDate").value = todayISO();
+    pSyncForm();
     document.getElementById("p_name").focus();
   }
   function pFail(m) { pErr.textContent = m; return false; }
+  // Autokoppling i formuläret: känd aktie → dölj kursfältet, förifyll köpkurs
+  // från stängningen på köpdatumet (redigerbar – ditt avslut kan ha skiljt sig).
+  function pSyncForm() {
+    var match = pStockByName(document.getElementById("p_name").value);
+    document.getElementById("p_curField").style.display = match ? "none" : "";
+    var date = document.getElementById("p_buyDate").value;
+    var priceEl = document.getElementById("p_buyPrice");
+    if (match && date) {
+      var c = pCloseAt(match, date);
+      if (c && (priceEl.value === "" || priceEl.dataset.auto === "1")) {
+        priceEl.value = c.price; priceEl.dataset.auto = "1";
+      }
+    }
+  }
+  document.getElementById("p_name").addEventListener("input", pSyncForm);
+  document.getElementById("p_buyDate").addEventListener("change", pSyncForm);
+  document.getElementById("p_buyPrice").addEventListener("input", function () { this.dataset.auto = "0"; });
   document.getElementById("p_add").addEventListener("click", addHolding);
+  // Portfölj i länken: hela portföljen serialiseras till #p=<base64> – gratis
+  // synk mellan enheter utan server eller konto. Öppna länken på en annan
+  // enhet så läses portföljen in och sparas lokalt där.
+  document.getElementById("p_share").addEventListener("click", function () {
+    var btn = this;
+    var data = btoa(unescape(encodeURIComponent(JSON.stringify(holdings))));
+    var url = location.origin + location.pathname + "#p=" + data;
+    function done() { var t = btn.textContent; btn.textContent = "Kopierad!"; setTimeout(function () { btn.textContent = t; }, 2000); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, function () { prompt("Kopiera länken:", url); });
+    else prompt("Kopiera länken:", url);
+  });
   document.getElementById("pForm").addEventListener("keydown", function (e) { if (e.key === "Enter" && e.target.tagName === "INPUT") { e.preventDefault(); addHolding(); } });
   pClear.addEventListener("click", function () { if (confirm("Ta bort alla aktier ur portföljen?")) { holdings = []; saveHoldings(); renderPortfolio(); } });
 
@@ -1891,6 +2022,16 @@
       }
       if (REAL.series && REAL.series.stocks && REAL.series.stocks.length) {
         _stratData = null;
+        // Portföljen: fyll aktielistan i formuläret och koppla befintliga
+        // innehav till kursdatan via namnmatchning.
+        var dl = document.getElementById("stockList");
+        if (dl) dl.innerHTML = REAL.series.stocks.map(function (st) { return '<option value="' + esc(st.name) + '">'; }).join("");
+        var changed = false;
+        holdings.forEach(function (h) {
+          if (!h.sym) { var m = pStockByName(h.name); if (m) { h.sym = m.symbol; changed = true; } }
+        });
+        if (changed) saveHoldings();
+        renderPortfolio();
         renderStrategy(); // sätter bannern utifrån aktuell korg (Analys-filtren)
         renderCompare();  // växlar Jämför-fliken till riktig data
       } else {
