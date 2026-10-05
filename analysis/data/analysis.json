@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-02T20:12:59.754Z",
+  "generated": "2026-10-05T22:16:36.355Z",
   "config": {
     "window": 40,
     "dropAt": "open",
@@ -578,23 +578,6 @@
       "avgGainPct": 0.01141708346056664
     },
     {
-      "name": "Sectra B",
-      "yield": 0.7925568240014956,
-      "window": 40,
-      "n": 9,
-      "fillRate": 88.88888888888889,
-      "medianRec": 0.5,
-      "fellRate": 22.22222222222222,
-      "avgRatio": -0.5751106717276282,
-      "maxRec": 24,
-      "recentFill": 66.66666666666666,
-      "years": [
-        2018,
-        2026
-      ],
-      "avgGainPct": 0.015374313290029881
-    },
-    {
       "name": "Avanza Bank",
       "yield": 3.263373330340158,
       "window": 40,
@@ -644,6 +627,23 @@
         2026
       ],
       "avgGainPct": 0.021685962596308696
+    },
+    {
+      "name": "Sectra B",
+      "yield": 0.7925568240014956,
+      "window": 40,
+      "n": 8,
+      "fillRate": 87.5,
+      "medianRec": 0,
+      "fellRate": 12.5,
+      "avgRatio": -0.7858883945824705,
+      "maxRec": 3,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.010136140504715247
     },
     {
       "name": "AAK",
@@ -1122,8 +1122,25 @@
       "avgGainPct": 0.006649141698872129
     },
     {
+      "name": "Thule",
+      "yield": 6.430784921227292,
+      "window": 40,
+      "n": 14,
+      "fillRate": 78.57142857142857,
+      "medianRec": 3,
+      "fellRate": 35.714285714285715,
+      "avgRatio": 0.7999877477759002,
+      "maxRec": 29,
+      "recentFill": 66.66666666666666,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.014645144723154953
+    },
+    {
       "name": "Saab B",
-      "yield": 0.3591250551219418,
+      "yield": 0.5550114488248192,
       "window": 40,
       "n": 9,
       "fillRate": 77.77777777777779,
@@ -1208,20 +1225,20 @@
     },
     {
       "name": "Stora Enso R",
-      "yield": 2.462976279643362,
+      "yield": 2.45895898054592,
       "window": 40,
       "n": 12,
       "fillRate": 75,
       "medianRec": 2,
       "fellRate": 33.33333333333333,
-      "avgRatio": 0.38525143223547015,
+      "avgRatio": 0.38558329119730256,
       "maxRec": 22,
       "recentFill": 66.66666666666666,
       "years": [
         2019,
         2026
       ],
-      "avgGainPct": 0.05370535092034631
+      "avgGainPct": 0.053702211019763385
     },
     {
       "name": "Telia",
@@ -1324,23 +1341,6 @@
         2026
       ],
       "avgGainPct": 0.026018362055276856
-    },
-    {
-      "name": "Thule",
-      "yield": 6.430784921227292,
-      "window": 40,
-      "n": 15,
-      "fillRate": 73.33333333333333,
-      "medianRec": 3,
-      "fellRate": 33.33333333333333,
-      "avgRatio": 0.7822109201463955,
-      "maxRec": 29,
-      "recentFill": 66.66666666666666,
-      "years": [
-        2018,
-        2026
-      ],
-      "avgGainPct": 0.0015815733765777058
     },
     {
       "name": "Industrivärden C",
@@ -1531,20 +1531,20 @@
     },
     {
       "name": "Tietoevry",
-      "yield": 4.668992417061611,
+      "yield": 4.661579146919431,
       "window": 40,
       "n": 15,
       "fillRate": 46.666666666666664,
       "medianRec": 5,
       "fellRate": 13.333333333333334,
-      "avgRatio": 0.5653404962435166,
+      "avgRatio": 0.5655185809439705,
       "maxRec": 22,
       "recentFill": 33.33333333333333,
       "years": [
         2019,
         2026
       ],
-      "avgGainPct": 0.00021033596517118733
+      "avgGainPct": 0.00020542173324377872
     },
     {
       "name": "SEB A",
