@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-09T20:24:40.836Z",
+  "generated": "2026-10-12T22:40:32.323Z",
   "config": {
     "window": 40,
     "dropAt": "open",
@@ -185,6 +185,23 @@
         2026
       ],
       "avgGainPct": 0.02263925618095309
+    },
+    {
+      "name": "Husqvarna B",
+      "yield": 2.924831939650349,
+      "window": 40,
+      "n": 14,
+      "fillRate": 100,
+      "medianRec": 1.5,
+      "fellRate": 42.857142857142854,
+      "avgRatio": 0.760218548611111,
+      "maxRec": 32,
+      "recentFill": 100,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.025962285250254062
     },
     {
       "name": "AstraZeneca",
@@ -476,23 +493,6 @@
       "avgGainPct": 0.02267986479896568
     },
     {
-      "name": "Husqvarna B",
-      "yield": 2.924831939650349,
-      "window": 40,
-      "n": 15,
-      "fillRate": 93.33333333333333,
-      "medianRec": 1.5,
-      "fellRate": 46.666666666666664,
-      "avgRatio": 0.8170927787037036,
-      "maxRec": 32,
-      "recentFill": 100,
-      "years": [
-        2018,
-        2026
-      ],
-      "avgGainPct": 0.017625188293941167
-    },
-    {
       "name": "Autoliv SDB",
       "yield": 3.076861510464058,
       "window": 40,
@@ -545,7 +545,7 @@
     },
     {
       "name": "Fabege",
-      "yield": 3.268482490272374,
+      "yield": 4.124513618677043,
       "window": 40,
       "n": 23,
       "fillRate": 91.30434782608695,
@@ -1446,7 +1446,7 @@
     },
     {
       "name": "Tele2 B",
-      "yield": 3.332275403558886,
+      "yield": 6.664550807117772,
       "window": 40,
       "n": 17,
       "fillRate": 58.82352941176471,
