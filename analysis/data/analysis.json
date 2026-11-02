@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-30T21:08:35.059Z",
+  "generated": "2026-11-02T23:45:45.573Z",
   "config": {
     "window": 40,
     "dropAt": "open",
@@ -816,25 +816,8 @@
       "avgGainPct": 0.0076954362032882855
     },
     {
-      "name": "NCC B",
-      "yield": 6.100942769724904,
-      "window": 40,
-      "n": 15,
-      "fillRate": 86.66666666666667,
-      "medianRec": 4,
-      "fellRate": 20,
-      "avgRatio": 0.8597038696866098,
-      "maxRec": 35,
-      "recentFill": 80,
-      "years": [
-        2018,
-        2026
-      ],
-      "avgGainPct": 0.019488876372940302
-    },
-    {
       "name": "Lindab",
-      "yield": 4.166666666666666,
+      "yield": 6.287878787878788,
       "window": 40,
       "n": 14,
       "fillRate": 85.71428571428571,
@@ -950,6 +933,23 @@
         2026
       ],
       "avgGainPct": 0.02757343300656626
+    },
+    {
+      "name": "NCC B",
+      "yield": 6.100942769724904,
+      "window": 40,
+      "n": 14,
+      "fillRate": 85.71428571428571,
+      "medianRec": 4.5,
+      "fellRate": 21.428571428571427,
+      "avgRatio": 0.8693256818070819,
+      "maxRec": 35,
+      "recentFill": 80,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.01846319151483683
     },
     {
       "name": "Sandvik",
