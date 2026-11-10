@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-06T21:50:16.634Z",
+  "generated": "2026-11-10T00:31:04.618Z",
   "config": {
     "window": 40,
     "dropAt": "open",
@@ -326,18 +326,18 @@
       "name": "H&M B",
       "yield": 3.9720279720279716,
       "window": 40,
-      "n": 14,
+      "n": 13,
       "fillRate": 100,
       "medianRec": 4,
-      "fellRate": 28.57142857142857,
-      "avgRatio": 0.9112366377821706,
+      "fellRate": 30.76923076923077,
+      "avgRatio": 0.9239170928693003,
       "maxRec": 34,
       "recentFill": 100,
       "years": [
-        2018,
+        2019,
         2026
       ],
-      "avgGainPct": 0.03430131501459474
+      "avgGainPct": 0.034448969146480365
     },
     {
       "name": "Indutrade",
@@ -425,23 +425,6 @@
       "avgGainPct": 0.02611681193746675
     },
     {
-      "name": "Investor B",
-      "yield": 1.646619198996067,
-      "window": 40,
-      "n": 16,
-      "fillRate": 93.75,
-      "medianRec": 7,
-      "fellRate": 31.25,
-      "avgRatio": 1.1818647750729276,
-      "maxRec": 24,
-      "recentFill": 83.33333333333334,
-      "years": [
-        2018,
-        2026
-      ],
-      "avgGainPct": 0.016558823217513074
-    },
-    {
       "name": "Husqvarna B",
       "yield": 3.7537538397563637,
       "window": 40,
@@ -459,6 +442,23 @@
       "avgGainPct": 0.021132427887689893
     },
     {
+      "name": "Investor B",
+      "yield": 1.646619198996067,
+      "window": 40,
+      "n": 15,
+      "fillRate": 93.33333333333333,
+      "medianRec": 5.5,
+      "fellRate": 33.33333333333333,
+      "avgRatio": 1.1956558934111228,
+      "maxRec": 24,
+      "recentFill": 83.33333333333334,
+      "years": [
+        2019,
+        2026
+      ],
+      "avgGainPct": 0.016173361936049836
+    },
+    {
       "name": "Autoliv SDB",
       "yield": 2.787692333058532,
       "window": 40,
@@ -474,23 +474,6 @@
         2026
       ],
       "avgGainPct": 0.013563177547523408
-    },
-    {
-      "name": "Assa Abloy B",
-      "yield": 1.5585402698616957,
-      "window": 40,
-      "n": 14,
-      "fillRate": 92.85714285714286,
-      "medianRec": 2,
-      "fellRate": 42.857142857142854,
-      "avgRatio": 0.7350951161114768,
-      "maxRec": 36,
-      "recentFill": 100,
-      "years": [
-        2019,
-        2026
-      ],
-      "avgGainPct": 0.009043666214304713
     },
     {
       "name": "Vitec B",
@@ -1021,7 +1004,7 @@
     },
     {
       "name": "Betsson B",
-      "yield": 7.494764398976981,
+      "yield": 11.206931969309462,
       "window": 40,
       "n": 11,
       "fillRate": 81.81818181818183,
