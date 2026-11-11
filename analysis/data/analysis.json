@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-10T22:02:46.714Z",
+  "generated": "2026-11-11T23:09:35.268Z",
   "config": {
     "window": 40,
     "dropAt": "open",
@@ -1089,7 +1089,7 @@
     },
     {
       "name": "Hemnet",
-      "yield": 1.2607830381393794,
+      "yield": 2.521566076278759,
       "window": 40,
       "n": 5,
       "fillRate": 80,
@@ -1259,20 +1259,20 @@
     },
     {
       "name": "Betsson B",
-      "yield": 11.510005459317584,
+      "yield": 11.522065406824147,
       "window": 40,
       "n": 12,
       "fillRate": 75,
       "medianRec": 3,
       "fellRate": 8.333333333333332,
-      "avgRatio": 0.5433841593055108,
+      "avgRatio": 0.5431533319257045,
       "maxRec": 32,
       "recentFill": 83.33333333333334,
       "years": [
         2019,
         2026
       ],
-      "avgGainPct": 0.02632470690731042
+      "avgGainPct": 0.02633445495581432
     },
     {
       "name": "Hexagon B",
