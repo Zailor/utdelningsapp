@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-13T22:16:41.301Z",
+  "generated": "2026-11-17T00:34:49.054Z",
   "config": {
     "window": 40,
     "dropAt": "open",
@@ -1242,20 +1242,20 @@
     },
     {
       "name": "Betsson B",
-      "yield": 7.5693102985568,
+      "yield": 7.570285401831843,
       "window": 40,
       "n": 12,
       "fillRate": 75,
       "medianRec": 3,
       "fellRate": 8.333333333333332,
-      "avgRatio": 0.5428463184683671,
+      "avgRatio": 0.5428275743406935,
       "maxRec": 32,
       "recentFill": 83.33333333333334,
       "years": [
         2019,
         2026
       ],
-      "avgGainPct": 0.02766286169410821
+      "avgGainPct": 0.02766366269549087
     },
     {
       "name": "Hexagon B",
