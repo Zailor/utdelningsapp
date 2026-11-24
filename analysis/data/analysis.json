@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-20T22:54:03.472Z",
+  "generated": "2026-11-24T03:07:52.613Z",
   "config": {
     "window": 40,
     "dropAt": "open",
@@ -511,7 +511,7 @@
     },
     {
       "name": "Autoliv SDB",
-      "yield": 3.002511739864865,
+      "yield": 3.0062254222972977,
       "window": 40,
       "n": 28,
       "fillRate": 89.28571428571429,
@@ -524,7 +524,7 @@
         2019,
         2026
       ],
-      "avgGainPct": 0.011720367387647574
+      "avgGainPct": 0.011721649311845824
     },
     {
       "name": "Sagax B",
@@ -1225,20 +1225,20 @@
     },
     {
       "name": "Betsson B",
-      "yield": 8.136655138121547,
+      "yield": 8.132987182320441,
       "window": 40,
       "n": 12,
       "fillRate": 75,
       "medianRec": 3,
       "fellRate": 8.333333333333332,
-      "avgRatio": 0.542126895930041,
+      "avgRatio": 0.5421915930363577,
       "maxRec": 32,
       "recentFill": 83.33333333333334,
       "years": [
         2019,
         2026
       ],
-      "avgGainPct": 0.022347669105508425
+      "avgGainPct": 0.0223448521502274
     },
     {
       "name": "Securitas B",
